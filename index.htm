@@ -1,0 +1,1482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Beyond Bengaluru — KDEM</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #F8F7F2;
+  --bg2: #FCFBF8;
+  --bg3: #FFFFFF;
+  --bg4: #EEECE5;
+  --border: rgba(80,70,50,0.06);
+  --border2: rgba(80,70,50,0.12);
+  --text: #2A2A2A;
+  --text2: #5F5F5F;
+  --text3: #8A8A8A;
+  --accent: #3B82F6;
+  --accent2: #2563EB;
+  --gold: #C89B3C;
+  --gold2: #8A6720;
+  --green: #2E9B67;
+  --red: #D85B5B;
+  --purple: #7C5CF4;
+  --teal: #1AA79A;
+  --orange: #E98A3A;
+  --font: 'Sora', sans-serif;
+  --mono: 'JetBrains Mono', monospace;
+  --radius: 10px;
+  --radius2: 16px;
+  --sidebar-w: 248px;
+  --transition: 0.18s ease;
+}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;display:flex;font-size:14px;line-height:1.6}
+
+/* SIDEBAR */
+#sidebar{width:var(--sidebar-w);background:var(--bg3);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:100;overflow-y:auto}
+.sidebar-logo{padding:22px 20px 18px;border-bottom:1px solid var(--border)}
+.logo-kdem{font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:var(--gold);font-weight:600;margin-bottom:3px}
+.logo-name{font-size:16px;font-weight:700;color:var(--text);letter-spacing:-0.02em;line-height:1.2}
+.logo-sub{font-size:11px;color:var(--text3);margin-top:3px}
+.nav-section-label{font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text3);padding:14px 18px 5px;font-weight:600}
+.nav-item{display:flex;align-items:center;gap:10px;padding:8px 18px;cursor:pointer;color:var(--text2);font-size:13px;font-weight:400;position:relative;user-select:none;transition:all var(--transition);border-radius:0}
+.nav-item:hover{background:var(--bg4);color:var(--text)}
+.nav-item.active{background:rgba(59,130,246,0.07);color:var(--accent);font-weight:600}
+.nav-item.active::before{content:'';position:absolute;left:0;top:5px;bottom:5px;width:3px;background:var(--accent);border-radius:0 3px 3px 0}
+.nav-icon{font-size:15px;width:18px;text-align:center;flex-shrink:0}
+.nav-badge{margin-left:auto;background:var(--red);color:#fff;font-size:10px;font-weight:700;padding:1px 6px;border-radius:10px;min-width:18px;text-align:center}
+.sidebar-bottom{margin-top:auto;padding:14px 18px;border-top:1px solid var(--border)}
+.sidebar-user{display:flex;align-items:center;gap:10px}
+.user-avatar{width:30px;height:30px;border-radius:50%;background:rgba(59,130,246,0.12);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--accent)}
+.user-name{font-size:12px;font-weight:600;color:var(--text)}
+.user-role{font-size:10px;color:var(--text3)}
+
+/* MAIN */
+#main{margin-left:var(--sidebar-w);flex:1;min-height:100vh;display:flex;flex-direction:column}
+
+/* TOPBAR */
+#topbar{height:54px;background:var(--bg3);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 28px;gap:14px;position:sticky;top:0;z-index:90}
+.topbar-title{font-size:15px;font-weight:700;color:var(--text);flex:1;letter-spacing:-0.01em}
+.cluster-select-wrap{position:relative}
+.cluster-select-wrap select{background:var(--bg4);border:1px solid var(--border2);border-radius:var(--radius);padding:6px 30px 6px 12px;color:var(--text);font-family:var(--font);font-size:12px;cursor:pointer;appearance:none;outline:none;font-weight:500}
+.cluster-select-wrap::after{content:'▾';position:absolute;right:10px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:10px;pointer-events:none}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:var(--radius);font-family:var(--font);font-size:13px;font-weight:500;cursor:pointer;border:1px solid var(--border2);background:var(--bg3);color:var(--text);transition:all var(--transition)}
+.btn:hover{background:var(--bg4)}
+.btn-primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn-primary:hover{background:var(--accent2);border-color:var(--accent2)}
+.btn-gold{background:rgba(200,155,60,0.1);border-color:rgba(200,155,60,0.25);color:var(--gold2)}
+.btn-gold:hover{background:rgba(200,155,60,0.18)}
+.btn-sm{padding:4px 10px;font-size:11px}
+.btn-icon{padding:5px 8px;font-size:13px}
+
+/* CONTENT */
+#content{padding:26px 28px;flex:1}
+.section{display:none}
+.section.active{display:block}
+
+/* STAT CARDS (clickable) */
+.overview-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:24px}
+.stat-card{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius2);padding:20px;cursor:pointer;transition:all var(--transition);position:relative;overflow:hidden}
+.stat-card:hover{border-color:var(--border2);box-shadow:0 4px 20px rgba(0,0,0,0.06);transform:translateY(-1px)}
+.stat-top-bar{height:3px;position:absolute;top:0;left:0;right:0;border-radius:var(--radius2) var(--radius2) 0 0}
+.stat-label{font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:var(--text3);font-weight:600;margin-bottom:6px}
+.stat-main{display:flex;align-items:baseline;gap:8px;margin-bottom:3px}
+.stat-number{font-size:30px;font-weight:700;font-family:var(--mono);color:var(--text);letter-spacing:-0.02em;line-height:1}
+.stat-unit{font-size:13px;font-weight:600;color:var(--text2)}
+.stat-sub{font-size:11px;color:var(--text3)}
+.stat-icon-bg{position:absolute;right:16px;top:50%;transform:translateY(-50%);font-size:36px;opacity:0.06;font-weight:700}
+.stat-view-link{font-size:10px;color:var(--accent);text-decoration:none;letter-spacing:0.04em;text-transform:uppercase;font-weight:600;margin-top:8px;display:inline-block;opacity:0}
+.stat-card:hover .stat-view-link{opacity:1}
+
+/* PANEL */
+.panel{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius2);margin-bottom:18px}
+.panel-header{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--border)}
+.panel-title{font-size:13px;font-weight:700;color:var(--text);display:flex;align-items:center;gap:8px}
+.panel-body{padding:18px}
+.panel-body-flush{padding:0}
+
+/* TABLES */
+.data-table{width:100%;border-collapse:collapse;font-size:13px}
+.data-table th{text-align:left;padding:9px 14px;color:var(--text3);font-weight:600;font-size:10px;text-transform:uppercase;letter-spacing:0.07em;border-bottom:1px solid var(--border);white-space:nowrap}
+.data-table td{padding:11px 14px;border-bottom:1px solid var(--border);color:var(--text2);vertical-align:middle}
+.data-table tr:last-child td{border-bottom:none}
+.data-table tr:hover td{background:var(--bg4)}
+.data-table td:first-child{color:var(--text);font-weight:500}
+
+/* TAGS */
+.tag{display:inline-flex;align-items:center;padding:2px 8px;border-radius:6px;font-size:11px;font-weight:500;white-space:nowrap;gap:4px}
+.tag-blue{background:rgba(59,130,246,0.1);color:#2563EB}
+.tag-green{background:rgba(46,155,103,0.1);color:#1e7a52}
+.tag-gold{background:rgba(200,155,60,0.12);color:var(--gold2)}
+.tag-red{background:rgba(216,91,91,0.1);color:#b03a3a}
+.tag-purple{background:rgba(124,92,244,0.1);color:#5b35c4}
+.tag-teal{background:rgba(26,167,154,0.1);color:#0d7a72}
+.tag-gray{background:var(--bg4);color:var(--text2)}
+.tag-orange{background:rgba(233,138,58,0.1);color:#b85e15}
+
+/* PRIORITY */
+.p-dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:5px;flex-shrink:0}
+.p-high{background:var(--red)}
+.p-medium{background:var(--gold)}
+.p-low{background:var(--green)}
+
+/* FORM */
+.form-group{margin-bottom:14px}
+.form-label{display:block;font-size:11px;color:var(--text2);margin-bottom:5px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em}
+.form-input,.form-select,.form-textarea{width:100%;background:var(--bg);border:1px solid var(--border2);border-radius:var(--radius);padding:9px 12px;color:var(--text);font-family:var(--font);font-size:13px;outline:none;transition:border-color var(--transition);appearance:none}
+.form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--accent)}
+.form-select option{background:var(--bg3)}
+.form-textarea{resize:vertical;min-height:80px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.form-row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(30,25,15,0.35);z-index:200;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity var(--transition);backdrop-filter:blur(3px)}
+.modal-overlay.open{opacity:1;pointer-events:all}
+.modal{background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius2);padding:26px;width:560px;max-width:96vw;max-height:88vh;overflow-y:auto;transform:translateY(10px);transition:transform var(--transition);box-shadow:0 20px 60px rgba(0,0,0,0.12)}
+.modal-overlay.open .modal{transform:translateY(0)}
+.modal-title{font-size:17px;font-weight:700;margin-bottom:20px;color:var(--text);display:flex;align-items:center;gap:10px}
+.modal-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:22px;padding-top:16px;border-top:1px solid var(--border)}
+
+/* SUB-PAGE OVERLAY */
+.sub-overlay{position:fixed;inset:0;background:var(--bg);z-index:150;display:none;flex-direction:column;overflow:hidden}
+.sub-overlay.open{display:flex}
+.sub-topbar{height:54px;background:var(--bg3);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 28px;gap:14px}
+.sub-body{flex:1;overflow-y:auto;padding:26px 28px}
+.sub-title{font-size:18px;font-weight:700;color:var(--text)}
+
+/* CALENDAR */
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
+.cal-day-label{text-align:center;font-size:10px;color:var(--text3);padding:5px 0;text-transform:uppercase;letter-spacing:0.06em;font-weight:600}
+.cal-day{aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--text2);border-radius:8px;cursor:pointer;position:relative;transition:background var(--transition);flex-direction:column;gap:2px;border:1px solid transparent}
+.cal-day:hover{background:var(--bg4)}
+.cal-day.today{background:var(--accent);color:#fff;font-weight:700;border-color:var(--accent)}
+.cal-day.has-event::after{content:'';width:4px;height:4px;border-radius:50%;background:var(--gold);position:absolute;bottom:3px}
+.cal-day.other-month{opacity:0.3}
+
+/* KANBAN */
+.kanban{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.kanban-col{background:var(--bg4);border-radius:var(--radius2);padding:14px;min-height:180px}
+.kanban-col-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--text3);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.kanban-card{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:12px;margin-bottom:10px;cursor:pointer;transition:all var(--transition)}
+.kanban-card:hover{border-color:var(--accent);box-shadow:0 2px 8px rgba(59,130,246,0.1)}
+.kanban-card-title{font-size:13px;font-weight:600;color:var(--text);margin-bottom:6px}
+.kanban-card-meta{font-size:11px;color:var(--text3);display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+
+/* TABS */
+.tab-bar{display:flex;gap:2px;background:var(--bg4);border-radius:var(--radius);padding:3px;margin-bottom:18px;width:fit-content;flex-wrap:wrap}
+.tab{padding:6px 14px;border-radius:8px;font-size:12px;font-weight:500;cursor:pointer;color:var(--text3);transition:all var(--transition);white-space:nowrap}
+.tab.active{background:var(--bg3);color:var(--text);box-shadow:0 1px 4px rgba(0,0,0,0.08)}
+.tab:hover:not(.active){color:var(--text2)}
+
+/* PROGRESS */
+.progress-bar{height:5px;background:var(--bg4);border-radius:4px;overflow:hidden;margin-top:5px}
+.progress-fill{height:100%;border-radius:4px;transition:width 0.4s ease}
+
+/* TIMELINE */
+.timeline{padding-left:18px;border-left:2px solid var(--border)}
+.timeline-item{position:relative;padding-bottom:18px;padding-left:18px}
+.timeline-item::before{content:'';position:absolute;left:-9px;top:5px;width:10px;height:10px;border-radius:50%;background:var(--bg4);border:2px solid var(--border2)}
+.timeline-item.done::before{background:var(--green);border-color:var(--green)}
+.timeline-item.active-t::before{background:var(--accent);border-color:var(--accent)}
+.timeline-date{font-size:11px;color:var(--text3);font-family:var(--mono);margin-bottom:3px}
+.timeline-title{font-size:13px;font-weight:600;color:var(--text)}
+.timeline-desc{font-size:12px;color:var(--text2);margin-top:2px}
+
+/* GRID UTILS */
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+
+/* MEMBER / EVENT CARDS */
+.member-card{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius2);padding:14px 16px;display:flex;align-items:center;gap:14px;margin-bottom:10px;transition:border-color var(--transition);cursor:pointer}
+.member-card:hover{border-color:var(--border2)}
+.avatar{width:34px;height:34px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0}
+.av-blue{background:rgba(59,130,246,0.12);color:var(--accent2)}
+.av-green{background:rgba(46,155,103,0.12);color:#1e7a52}
+.av-gold{background:rgba(200,155,60,0.12);color:var(--gold2)}
+.av-purple{background:rgba(124,92,244,0.12);color:#5b35c4}
+
+/* SEARCH */
+.search-bar{display:flex;align-items:center;gap:8px;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius);padding:8px 14px;margin-bottom:16px}
+.search-bar:focus-within{border-color:var(--accent)}
+.search-bar input{flex:1;background:transparent;border:none;outline:none;color:var(--text);font-family:var(--font);font-size:13px}
+.search-bar input::placeholder{color:var(--text3)}
+
+/* CLUSTER EVENT CARD */
+.event-section-card{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius2);margin-bottom:18px;overflow:hidden}
+.event-section-header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;background:var(--bg4);border-bottom:1px solid var(--border);cursor:pointer}
+.event-section-title{font-size:14px;font-weight:700;color:var(--text)}
+.event-section-body{padding:18px 20px}
+.event-sub-tabs{display:flex;gap:2px;margin-bottom:16px}
+.event-sub-tab{padding:5px 12px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;color:var(--text3);transition:all var(--transition);white-space:nowrap;text-transform:uppercase;letter-spacing:0.05em}
+.event-sub-tab.active{background:var(--accent);color:#fff}
+.event-sub-tab:hover:not(.active){background:var(--bg4);color:var(--text)}
+
+/* POLICY TABLE */
+.policy-row-applied-yes{color:var(--green);font-weight:600}
+.policy-row-applied-no{color:var(--text3)}
+
+/* BB FACTS */
+.bb-fact-card{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius2);padding:18px 20px;margin-bottom:12px}
+.bb-fact-title{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--text3);margin-bottom:10px}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--bg4);border-radius:4px}
+
+/* DIVIDER */
+.divider{height:1px;background:var(--border);margin:16px 0}
+
+/* EMPTY */
+.empty-state{text-align:center;padding:36px 20px;color:var(--text3)}
+.empty-icon{font-size:32px;margin-bottom:10px;opacity:0.35}
+.empty-text{font-size:12px}
+
+/* RESPONSIVE */
+@media(max-width:900px){
+  #sidebar{transform:translateX(-100%)}
+  #main{margin-left:0}
+  .grid-2,.grid-3{grid-template-columns:1fr}
+  .kanban{grid-template-columns:1fr}
+  .form-row,.form-row-3{grid-template-columns:1fr}
+  .overview-stats{grid-template-columns:1fr 1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside id="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-kdem">KDEM · Internal</div>
+    <div class="logo-name">Beyond Bengaluru</div>
+    <div class="logo-sub">Vertical Operations Center</div>
+  </div>
+
+  <div class="nav-section-label">Overview</div>
+  <div class="nav-item active" data-section="overview"><span class="nav-icon">⬡</span> BB Overview</div>
+
+  <div class="nav-section-label">Operations</div>
+  <div class="nav-item" data-section="clusters"><span class="nav-icon">◎</span> Cluster Wise</div>
+  <div class="nav-item" data-section="clusterevents"><span class="nav-icon">◉</span> Cluster Events</div>
+
+  <div class="nav-section-label">Engagement</div>
+  <div class="nav-item" data-section="communications"><span class="nav-icon">✉</span> Communications <span class="nav-badge" id="comm-badge">3</span></div>
+  <div class="nav-item" data-section="policy"><span class="nav-icon">⚖</span> Policy Tracker</div>
+  <div class="nav-item" data-section="nri"><span class="nav-icon">◈</span> NRI Forums</div>
+  <div class="nav-item" data-section="bb"><span class="nav-icon">⬢</span> Beyond Bengaluru</div>
+
+  <div class="sidebar-bottom">
+    <div class="sidebar-user">
+      <div class="user-avatar">KD</div>
+      <div>
+        <div class="user-name">KDEM Team</div>
+        <div class="user-role">Beyond Bengaluru Vertical</div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div id="main">
+  <div id="topbar">
+    <div class="topbar-title" id="topbar-title">BB Overview</div>
+    <div class="cluster-select-wrap" id="topbar-cluster-wrap">
+      <select id="cluster-select" onchange="switchCluster(this.value)">
+        <option value="all">All Clusters</option>
+        <option value="bangalore">Bangalore</option>
+        <option value="mysuru">Mysuru</option>
+        <option value="mangaluru">Mangaluru</option>
+        <option value="hdb">Hubli-Dharwad-Belagavi</option>
+        <option value="kalaburagi">Kalaburagi</option>
+        <option value="tumakuru">Tumakuru</option>
+        <option value="shivamogga">Shivamogga</option>
+      </select>
+    </div>
+    <button class="btn btn-primary" onclick="openAddModal()">+ Add</button>
+  </div>
+
+  <div id="content">
+
+    <!-- ══ OVERVIEW ══ -->
+    <div class="section active" id="section-overview">
+      <div class="overview-stats">
+        <div class="stat-card" onclick="openSubPage('companies')">
+          <div class="stat-top-bar" style="background:var(--accent)"></div>
+          <div class="stat-icon-bg">⬢</div>
+          <div class="stat-label">Companies</div>
+          <div class="stat-main"><span class="stat-number">156</span></div>
+          <div class="stat-sub">Across all BB clusters</div>
+          <div class="stat-view-link">View all →</div>
+        </div>
+        <div class="stat-card" onclick="openSubPage('startups')">
+          <div class="stat-top-bar" style="background:var(--green)"></div>
+          <div class="stat-icon-bg">✦</div>
+          <div class="stat-label">Startups</div>
+          <div class="stat-main"><span class="stat-number">300</span><span class="stat-unit">+</span></div>
+          <div class="stat-sub">Registered & engaged</div>
+          <div class="stat-view-link">View all →</div>
+        </div>
+        <div class="stat-card" onclick="openSubPage('ecosystem')">
+          <div class="stat-top-bar" style="background:var(--purple)"></div>
+          <div class="stat-icon-bg">◈</div>
+          <div class="stat-label">Innovation Ecosystem</div>
+          <div class="stat-main"><span class="stat-number" style="font-size:20px">ESDM</span></div>
+          <div class="stat-sub">Electronics & Design Manufacturing</div>
+          <div class="stat-view-link">View details →</div>
+        </div>
+        <div class="stat-card" onclick="openSubPage('investments')">
+          <div class="stat-top-bar" style="background:var(--gold)"></div>
+          <div class="stat-icon-bg">₹</div>
+          <div class="stat-label">Investments</div>
+          <div class="stat-main"><span class="stat-number">6</span><span class="stat-unit">·</span><span class="stat-number" style="font-size:18px">₹3200Cr</span></div>
+          <div class="stat-sub">Committed across clusters</div>
+          <div class="stat-view-link">View pipeline →</div>
+        </div>
+        <div class="stat-card" onclick="openSubPage('datacentres')">
+          <div class="stat-top-bar" style="background:var(--teal)"></div>
+          <div class="stat-icon-bg">▣</div>
+          <div class="stat-label">Data Centres</div>
+          <div class="stat-main"><span class="stat-number">4</span><span class="stat-unit">·</span><span class="stat-unit" style="font-size:16px;color:var(--teal)">410MW</span></div>
+          <div class="stat-sub">Total pipeline capacity</div>
+          <div class="stat-view-link">View all →</div>
+        </div>
+        <div class="stat-card" onclick="openSubPage('nriforum')">
+          <div class="stat-top-bar" style="background:var(--orange)"></div>
+          <div class="stat-icon-bg">◎</div>
+          <div class="stat-label">NRI Forum</div>
+          <div class="stat-main"><span class="stat-number" id="ov-nri">0</span></div>
+          <div class="stat-sub">Registered members</div>
+          <div class="stat-view-link">View members →</div>
+        </div>
+      </div>
+
+      <!-- CALENDAR -->
+      <div class="grid-2">
+        <div class="panel">
+          <div class="panel-header">
+            <div class="panel-title">📅 Upcoming Events & Meetings</div>
+            <button class="btn btn-sm" onclick="openEventModal()">+ Event</button>
+          </div>
+          <div class="panel-body panel-body-flush" id="ov-events-list" style="padding:0"></div>
+        </div>
+        <div class="panel">
+          <div class="panel-header">
+            <div class="panel-title">◉ May 2025</div>
+          </div>
+          <div class="panel-body">
+            <div class="cal-grid" id="ov-cal-labels"></div>
+            <div class="cal-grid" id="ov-cal-body" style="margin-top:4px"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Activity -->
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">◎ Recent Activity</div>
+          <button class="btn btn-sm" onclick="openActivityModal()">+ Log</button>
+        </div>
+        <div class="panel-body">
+          <div class="timeline" id="ov-timeline"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ CLUSTERS ══ -->
+    <div class="section" id="section-clusters">
+      <div class="tab-bar" id="cluster-tabs">
+        <div class="tab active" data-cluster="all" onclick="renderClusterDetail('all',this)">All</div>
+        <div class="tab" data-cluster="bangalore" onclick="renderClusterDetail('bangalore',this)">Bangalore</div>
+        <div class="tab" data-cluster="mysuru" onclick="renderClusterDetail('mysuru',this)">Mysuru</div>
+        <div class="tab" data-cluster="mangaluru" onclick="renderClusterDetail('mangaluru',this)">Mangaluru</div>
+        <div class="tab" data-cluster="hdb" onclick="renderClusterDetail('hdb',this)">HDB</div>
+        <div class="tab" data-cluster="kalaburagi" onclick="renderClusterDetail('kalaburagi',this)">Kalaburagi</div>
+        <div class="tab" data-cluster="tumakuru" onclick="renderClusterDetail('tumakuru',this)">Tumakuru</div>
+        <div class="tab" data-cluster="shivamogga" onclick="renderClusterDetail('shivamogga',this)">Shivamogga</div>
+        <div class="tab" data-cluster="datacentres" onclick="renderClusterDetail('datacentres',this)">Data Centres</div>
+      </div>
+      <div id="cluster-detail-body"></div>
+    </div>
+
+    <!-- ══ CLUSTER EVENTS ══ -->
+    <div class="section" id="section-clusterevents">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px">
+        <div>
+          <div style="font-size:15px;font-weight:700;color:var(--text)">Cluster Events</div>
+          <div style="font-size:12px;color:var(--text3);margin-top:2px">Manage agendas, speakers, and responsibilities across BB events</div>
+        </div>
+        <button class="btn btn-primary" onclick="openClusterEventAddModal()">+ New Event</button>
+      </div>
+      <div id="cluster-events-list"></div>
+    </div>
+
+    <!-- ══ COMMUNICATIONS ══ -->
+    <div class="section" id="section-communications">
+      <div class="tab-bar">
+        <div class="tab active" onclick="switchCommTab('reminders',this)">🔔 Reminders</div>
+        <div class="tab" onclick="switchCommTab('followups',this)">↪ Follow-ups</div>
+        <div class="tab" onclick="switchCommTab('calendar',this)">📅 Calendar</div>
+        <div class="tab" onclick="switchCommTab('notes',this)">📝 Notes</div>
+        <div class="tab" onclick="switchCommTab('database',this)">👥 Contacts DB</div>
+      </div>
+      <div id="comm-reminders"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px"><span style="font-size:13px;font-weight:600">Active Reminders</span><button class="btn btn-primary btn-sm" onclick="openReminderModal()">+ Reminder</button></div><div id="reminders-list"></div></div>
+      <div id="comm-followups" style="display:none"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px"><span style="font-size:13px;font-weight:600">Follow-up Tracker</span><button class="btn btn-primary btn-sm" onclick="openFollowupModal()">+ Follow-up</button></div><table class="data-table"><thead><tr><th>Contact</th><th>Company</th><th>Topic</th><th>Due</th><th>Channel</th><th>Status</th></tr></thead><tbody id="followup-tbody"></tbody></table></div>
+      <div id="comm-calendar" style="display:none">
+        <div class="grid-2">
+          <div class="panel"><div class="panel-header"><div class="panel-title">◉ May 2025</div><button class="btn btn-primary btn-sm" onclick="openEventModal()">+ Event</button></div><div class="panel-body"><div class="cal-grid" id="comm-cal-labels"></div><div class="cal-grid" id="comm-cal-body" style="margin-top:4px"></div></div></div>
+          <div class="panel"><div class="panel-header"><div class="panel-title">Events</div></div><div class="panel-body panel-body-flush" id="comm-events-list" style="padding:0"></div></div>
+        </div>
+      </div>
+      <div id="comm-notes" style="display:none"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px"><span style="font-size:13px;font-weight:600">Notes & Memos</span><button class="btn btn-primary btn-sm" onclick="openNoteModal()">+ Note</button></div><div id="notes-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px"></div></div>
+      <div id="comm-database" style="display:none">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px"><span style="font-size:13px;font-weight:600">Contact Database</span><button class="btn btn-primary btn-sm" onclick="openContactModal()">+ Contact</button></div>
+        <div class="search-bar"><span style="color:var(--text3)">⌕</span><input type="text" placeholder="Search by name, org or role…" oninput="filterContacts(this.value)" id="contact-search"></div>
+        <table class="data-table"><thead><tr><th>Name</th><th>Organisation</th><th>Role</th><th>Phone</th><th>Email</th><th>Cluster</th><th>Type</th></tr></thead><tbody id="contacts-tbody"></tbody></table>
+      </div>
+    </div>
+
+    <!-- ══ POLICY TRACKER ══ -->
+    <div class="section" id="section-policy">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+        <div><div style="font-size:15px;font-weight:700;color:var(--text)">Policy Tracker</div><div style="font-size:12px;color:var(--text3);margin-top:2px">Track company applications across Startup, IT & GCC policies</div></div>
+        <button class="btn btn-primary" onclick="openPolicyAppModal()">+ Application</button>
+      </div>
+      <div class="tab-bar" id="policy-tabs">
+        <div class="tab active" onclick="filterPolicy('all',this)">All Policies</div>
+        <div class="tab" onclick="filterPolicy('startup',this)">Startup</div>
+        <div class="tab" onclick="filterPolicy('it',this)">IT / ITeS</div>
+        <div class="tab" onclick="filterPolicy('gcc',this)">GCC</div>
+      </div>
+      <table class="data-table"><thead><tr><th>Company</th><th>Policy</th><th>Category</th><th>Details</th><th>Applied</th><th>Date</th><th>Status</th><th>Notes</th></tr></thead><tbody id="policy-tbody"></tbody></table>
+    </div>
+
+    <!-- ══ NRI FORUMS ══ -->
+    <div class="section" id="section-nri">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+        <div><div style="font-size:15px;font-weight:700">NRI Investment Forums</div><div style="font-size:12px;color:var(--text3);margin-top:2px">Diaspora engagement, forum events, investment commitments</div></div>
+        <button class="btn btn-primary" onclick="openNRIModal()">+ Member</button>
+      </div>
+      <div class="grid-2">
+        <div>
+          <div class="panel-title" style="font-size:13px;font-weight:700;margin-bottom:12px">Members</div>
+          <div id="nri-members-list"></div>
+        </div>
+        <div class="panel">
+          <div class="panel-header"><div class="panel-title">◉ Forum Events</div><button class="btn btn-sm" onclick="openNRIEventModal()">+ Event</button></div>
+          <div class="panel-body" id="nri-events-list"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ BEYOND BENGALURU ══ -->
+    <div class="section" id="section-bb">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+        <div><div style="font-size:15px;font-weight:700">Beyond Bengaluru</div><div style="font-size:12px;color:var(--text3);margin-top:2px">Key facts, company pipeline and investment data for the BB vertical</div></div>
+        <button class="btn btn-primary" onclick="openCompanyModal()">+ Company</button>
+      </div>
+
+      <!-- BB Fact Boxes -->
+      <div class="grid-3" style="margin-bottom:20px">
+        <div class="bb-fact-card">
+          <div class="bb-fact-title">Mission</div>
+          <div style="font-size:13px;color:var(--text2);line-height:1.7">Attract companies, investments, and talent to Karnataka's districts beyond Bengaluru through policy, infrastructure and ecosystem building.</div>
+        </div>
+        <div class="bb-fact-card">
+          <div class="bb-fact-title">Clusters</div>
+          <div style="font-size:13px;color:var(--text2)">6 BB Clusters: Mysuru · Mangaluru · Hubli-Dharwad-Belagavi · Kalaburagi · Tumakuru · Shivamogga — each covering 4–6 districts.</div>
+        </div>
+        <div class="bb-fact-card">
+          <div class="bb-fact-title">Key Policies</div>
+          <div style="font-size:13px;color:var(--text2)">Karnataka IT/ITeS Policy 2024 · Startup Policy 2022 · GCC Policy 2024 — providing fiscal, land and infrastructure incentives.</div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">⬢ Company Pipeline</div>
+          <div style="display:flex;gap:8px">
+            <div class="search-bar" style="margin-bottom:0;padding:5px 12px"><span style="color:var(--text3)">⌕</span><input type="text" placeholder="Search…" oninput="filterBBCompanies(this.value)" style="background:transparent;border:none;outline:none;font-family:var(--font);font-size:12px;color:var(--text);width:140px"></div>
+          </div>
+        </div>
+        <div style="overflow-x:auto">
+          <table class="data-table"><thead><tr><th>Company</th><th>Sector</th><th>Cluster</th><th>Stage</th><th>Investment (₹Cr)</th><th>Jobs</th><th>Contact</th><th>Notes</th></tr></thead><tbody id="bb-companies-tbody"></tbody></table>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+
+<!-- ══ SUB-PAGE OVERLAYS ══ -->
+<div class="sub-overlay" id="sub-companies">
+  <div class="sub-topbar"><button class="btn btn-sm" onclick="closeSubPage('sub-companies')">← Back</button><div class="sub-title">Companies</div><button class="btn btn-primary btn-sm" onclick="openCompanyModal()">+ Company</button></div>
+  <div class="sub-body"><table class="data-table"><thead><tr><th>Company</th><th>Sector</th><th>Cluster</th><th>Stage</th><th>Investment</th><th>Jobs</th><th>Contact</th></tr></thead><tbody id="sub-companies-tbody"></tbody></table></div>
+</div>
+<div class="sub-overlay" id="sub-startups">
+  <div class="sub-topbar"><button class="btn btn-sm" onclick="closeSubPage('sub-startups')">← Back</button><div class="sub-title">Startups</div><button class="btn btn-primary btn-sm" onclick="openStartupModal()">+ Startup</button></div>
+  <div class="sub-body"><table class="data-table"><thead><tr><th>Startup</th><th>Sector</th><th>Cluster</th><th>Stage</th><th>Founder</th><th>Funding</th><th>Notes</th></tr></thead><tbody id="sub-startups-tbody"></tbody></table></div>
+</div>
+<div class="sub-overlay" id="sub-ecosystem">
+  <div class="sub-topbar"><button class="btn btn-sm" onclick="closeSubPage('sub-ecosystem')">← Back</button><div class="sub-title">Innovation Ecosystem — ESDM</div></div>
+  <div class="sub-body">
+    <div class="bb-fact-card"><div class="bb-fact-title">ESDM Overview</div><div style="font-size:13px;color:var(--text2);line-height:1.8">Electronics System Design & Manufacturing (ESDM) is a priority sector under Karnataka's IT policy. Key initiatives include PCB design hubs, semiconductor design centres, and IoT clusters across BB districts.</div></div>
+    <div class="panel" style="margin-top:14px"><div class="panel-header"><div class="panel-title">ESDM Units & Initiatives</div><button class="btn btn-primary btn-sm" onclick="openESDMModal()">+ Add</button></div><div class="panel-body panel-body-flush"><table class="data-table"><thead><tr><th>Unit/Initiative</th><th>Cluster</th><th>Type</th><th>Investment</th><th>Status</th><th>Notes</th></tr></thead><tbody id="esdm-tbody"></tbody></table></div></div>
+  </div>
+</div>
+<div class="sub-overlay" id="sub-investments">
+  <div class="sub-topbar"><button class="btn btn-sm" onclick="closeSubPage('sub-investments')">← Back</button><div class="sub-title">Investment Pipeline</div><button class="btn btn-primary btn-sm" onclick="openCompanyModal()">+ Investment</button></div>
+  <div class="sub-body">
+    <div class="overview-stats" style="margin-bottom:20px">
+      <div class="stat-card"><div class="stat-top-bar" style="background:var(--gold)"></div><div class="stat-label">Total Committed</div><div class="stat-main"><span class="stat-number">₹3200</span><span class="stat-unit">Cr</span></div></div>
+      <div class="stat-card"><div class="stat-top-bar" style="background:var(--accent)"></div><div class="stat-label">Investments</div><div class="stat-main"><span class="stat-number">6</span></div></div>
+      <div class="stat-card"><div class="stat-top-bar" style="background:var(--green)"></div><div class="stat-label">Jobs Potential</div><div class="stat-main"><span class="stat-number" id="invest-jobs">0</span></div></div>
+    </div>
+    <table class="data-table"><thead><tr><th>Company</th><th>Cluster</th><th>Sector</th><th>Investment (₹Cr)</th><th>Jobs</th><th>Stage</th></tr></thead><tbody id="investments-tbody"></tbody></table>
+  </div>
+</div>
+<div class="sub-overlay" id="sub-datacentres">
+  <div class="sub-topbar"><button class="btn btn-sm" onclick="closeSubPage('sub-datacentres')">← Back</button><div class="sub-title">Data Centres</div><button class="btn btn-primary btn-sm" onclick="openDCModal()">+ Data Centre</button></div>
+  <div class="sub-body">
+    <div class="overview-stats" style="margin-bottom:20px">
+      <div class="stat-card"><div class="stat-top-bar" style="background:var(--teal)"></div><div class="stat-label">Total DCs</div><div class="stat-main"><span class="stat-number" id="dc-total">4</span></div></div>
+      <div class="stat-card"><div class="stat-top-bar" style="background:var(--green)"></div><div class="stat-label">Total MW</div><div class="stat-main"><span class="stat-number">410</span><span class="stat-unit">MW</span></div></div>
+      <div class="stat-card"><div class="stat-top-bar" style="background:var(--gold)"></div><div class="stat-label">Operational</div><div class="stat-main"><span class="stat-number" id="dc-op">0</span></div></div>
+    </div>
+    <div id="dc-cards" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px"></div>
+  </div>
+</div>
+<div class="sub-overlay" id="sub-nriforum">
+  <div class="sub-topbar"><button class="btn btn-sm" onclick="closeSubPage('sub-nriforum')">← Back</button><div class="sub-title">NRI Forum Members</div><button class="btn btn-primary btn-sm" onclick="openNRIModal()">+ Member</button></div>
+  <div class="sub-body"><div id="sub-nri-list"></div></div>
+</div>
+
+<!-- ══ MODALS ══ -->
+
+<!-- Task -->
+<div class="modal-overlay" id="modal-task">
+  <div class="modal">
+    <div class="modal-title">✓ Add Task</div>
+    <div class="form-row"><div class="form-group"><label class="form-label">Task</label><input class="form-input" id="t-title" placeholder="Task title"></div><div class="form-group"><label class="form-label">Owner</label><input class="form-input" id="t-owner" placeholder="Name"></div></div>
+    <div class="form-row"><div class="form-group"><label class="form-label">Cluster</label><select class="form-select" id="t-cluster"><option value="all">All</option><option value="bangalore">Bangalore</option><option value="mysuru">Mysuru</option><option value="mangaluru">Mangaluru</option><option value="hdb">HDB</option><option value="kalaburagi">Kalaburagi</option><option value="tumakuru">Tumakuru</option><option value="shivamogga">Shivamogga</option></select></div><div class="form-group"><label class="form-label">Priority</label><select class="form-select" id="t-priority"><option value="high">High</option><option value="medium" selected>Medium</option><option value="low">Low</option></select></div></div>
+    <div class="form-row"><div class="form-group"><label class="form-label">Due Date</label><input class="form-input" type="date" id="t-due"></div><div class="form-group"><label class="form-label">Status</label><select class="form-select" id="t-status"><option value="todo">To Do</option><option value="inprogress">In Progress</option><option value="done">Done</option></select></div></div>
+    <div class="form-group"><label class="form-label">Notes</label><textarea class="form-textarea" id="t-notes" placeholder="Additional context…"></textarea></div>
+    <div class="modal-actions"><button class="btn" onclick="closeModal('modal-task')">Cancel</button><button class="btn btn-primary" onclick="saveTask()">Save Task</button></div>
+  </div>
+</div>
+
+<!-- Company -->
+<div class="modal-overlay" id="modal-company">
+  <div class="modal">
+    <div class="modal-title">⬢ Add Company</div>
+    <div class="form-row"><div class="form-group"><label class="form-label">Company Name</label><input class="form-input" id="co-name" placeholder="e.g. Infosys BPM"></div><div class="form-group"><label class="form-label">Sector</label><select class="form-select" id="co-sector"><option>IT / ITeS</option><option>GCC</option><option>Manufacturing</option><option>Logistics</option><option>Agritech</option><option>Fintech</option><option>Healthcare</option><option>Data Centre</option><option>ESDM</option><option>Startup</option><option>Other</option></select></div></div>
+    <div class="form-row"><div class="form-group"><label class="form-label">Cluster</label><select class="form-select" id="co-cluster"><option value="bangalore">Bangalore</option><option value="mysuru">Mysuru</option><option value="mangaluru">Mangaluru</option><option value="hdb">HDB</option><option value="kalaburagi">Kalaburagi</option><option value="tumakuru">Tumakuru</option><option value="shivamogga">Shivamogga</option></select></div><div class="form-group"><label class="form-label">Stage</label><select class="form-select" id="co-stage"><option value="prospect">Prospect</option><option value="engaged">Engaged</option><option value="committed">Committed</option></select></div></div>
+    <div class="form-row"><div class="form-group"><label class="form-label">Investment (₹Cr)</label><input class="form-input" type="number" id="co-invest" placeholder="0"></div><div class="form-group"><label class="form-label">Jobs Potential</label><input class="form-input" type="number" id="co-jobs" placeholder="0"></div></div>
+    <div class="form-row"><div class="form-group"><label class="form-label">Contact Person</label><input class="form-input" id="co-contact" placeholder="Name"></div><div class="form-group"><label class="form-label">Email</label><input class="form-input" id="co-email" placeholder="email@company.com"></div></div>
+    <div class="form-group"><label class="form-label">Notes</label><textarea class="form-textarea" id="co-notes" placeholder="Key info, last interaction…"></textarea></div>
+    <div class="modal-actions"><button class="btn" onclick="closeModal('modal-company')">Cancel</button><button class="btn btn-primary" onclick="saveCompany()">Save</button></div>
+  </div>
+</div>
+
+<!-- Startup -->
+<div class="modal-overlay" id="modal-startup">
+  <div class="modal">
+    <div class="modal-title">✦ Add Startup</div>
+    <div class="form-row"><div class="form-group"><label class="form-label">Startup Name</label><input class="form-input" id="su-name" placeholder="Name"></div><div class="form-group"><label class="form-label">Sector</label><select class="form-select" id="su-sector"><option>Agritech</option><option>Fintech</option><option>Healthtech</option><option>ESDM</option><option>SaaS</option><option>Logistics</option><option>Edtech</option><option>CleanTech</option><option>Other</option></select></div></div>
+    <div class="form-row"><div class="form-group"><label class="form-label">Cluster</label><select class="form-select" id="su-cluster"><option value="bangalore">Bangalore</option><option value="mysuru">Mysuru</option><option value="mangaluru">Mangaluru</option><option value="hdb">HDB</option><option value="kalaburagi">Kalaburagi</option><option value="tumakuru">Tumakuru</option><option value="shivamogga">Shivamogga</option></select></div><div class="form-group"><label class="form-label">Stage</label><select class="form-select" id="su-stage"><option>Ideation</option><option>Prototype</option><option>Revenue</option><option>Scaling</option></select></div></div>
+    <div class="form-row"><div class="form-group"><label class="form-label">Founder</label><input class="form-input" id="su-founder" placeholder="Name"></div><div class="form-group"><label class="form-label">Funding (₹L)</label><input class="form-input" type="number" id="su-funding" placeholder="0"></div></div>
+    <div class="form-group"><label class="form-label">Notes</label><textarea class="form-textarea" id="su-notes"></textarea></div>
+    <div class="modal-actions"><button class="btn" onclick="closeModal('modal-startup')">Cancel</button><button class="btn btn-primary" onclick="saveStartup()">Save</button></div>
+  </div>
+</div>
+
+<!-- ESDM -->
+<div class="modal-overlay" id="modal-esdm">
+  <div class="modal">
+    <div class="modal-title">◈ Add ESDM Initiative</div>
+    <div class="form-row"><div class="form-group"><label class="form-label">Name</label><input class="form-input" id="es-name" placeholder="Unit / Initiative name"></div><div class="form-group"><label class="form-label">Cluster</label><select class="form-select" id="es-cluster"><option value="bangalore">Bangalore</option><option value="mysuru">Mysuru</option><option value="mangaluru">Mangaluru</option><option value="hdb">HDB</option><option value="kalaburagi">Kalaburagi</option><option value="tumakuru">Tumakuru</option><option value="shivamogga">Shivamogga</option></select></div></div>
+    <div class="form-row"><div class="form-group"><label class="form-label">Type</label><select class="form-select" id="es-type"><option>PCB Design</option><option>Semiconductor</option><option>IoT</option><option>R&D Centre</option><option>Manufacturing</option><option>Other</option></select></div><div class="form-group"><label class="form-label">Investment (₹Cr)</label><input class="form-input" type="number" id="es-invest" placeholder="0"></div></div>
+    <div class="form-row"><div class="form-group"><label class="form-label">Status</label><select class="form-select" id="es-status"><option>Prospect</option><option>Planning</option><option>Active</option><option>Operational</option></select></div><div class="form-group"></div></div>
+    <div class="form-group"><label class="form-label">Notes</label><textarea class="form-textarea" id="es-notes"></textarea></div>
+    <div class="modal-actions"><button class="btn" onclick="closeModal('modal-esdm')">Cancel</button><button class="btn btn-primary" onclick="saveESDM()">Save</button></div>
+  </div>
+</div>
+
+<!-- DC -->
+<div class="modal-overlay" id="modal-dc">
+  <div class="modal">
+    <div class="modal-title">▣ Add Data Centre</div>
+    <div class="form-row"><div class="form-group"><label class="form-label">DC Name</label><input class="form-input" id="dc-name" placeholder="e.g. Mysuru Edge DC"></div><div class="form-group"><label class="form-label">Operator</label><input class="form-input" id="dc-operator" placeholder="e.g. NTT Data"></div></div>
+    <div class="form-row"><div class="form-group"><label class="form-label">Cluster</label><select class="form-select" id="dc-cluster"><option value="bangalore">Bangalore</option><option value="mysuru">Mysuru</option><option value="mangaluru">Mangaluru</option><option value="hdb">HDB</option><option value="kalaburagi">Kalaburagi</option><option value="tumakuru">Tumakuru</option><option value="shivamogga">Shivamogga</option></select></div><div class="form-group"><label class="form-label">Status</label><select class="form-select" id="dc-status"><option value="prospect">Prospecting</option><option value="planning">Planning</option><option value="construction">Under Construction</option><option value="operational">Operational</option></select></div></div>
+    <div class="form-row"><div class="form-group"><label class="form-label">Capacity (MW)</label><input class="form-input" type="number" id="dc-mw" placeholder="0"></div><div class="form-group"><label class="form-label">Investment (₹Cr)</label><input class="form-input" type="number" id="dc-invest" placeholder="0"></div></div>
+    <div class="form-row"><div class="form-group"><label class="form-label">Land (Acres)</label><input class="form-input" type="number" id="dc-land" placeholder="0"></div><div class="form-group"><label class="form-label">Expected Go-Live</label><input class="form-input" type="date" id="dc-golive"></div></div>
+    <div class="form-group"><label class="form-label">Notes</label><textarea class="form-textarea" id="dc-notes" placeholder="Connectivity, power, land status…"></textarea></div>
+    <div class="modal-actions"><button class="btn" onclick="closeModal('modal-dc')">Cancel</button><button class="btn btn-primary" onclick="saveDC()">Save</button></div>
+  </div>
+</div>
+
+<!-- Reminder -->
+<div class="modal-overlay" id="modal-reminder">
+  <div class="modal">
+    <div class="modal-title">🔔 Add Reminder</div>
+    <div class="form-group"><label class="form-label">Title</label><input class="form-input" id="rem-title" placeholder="e.g. Follow up with Amazon DC team"></div>
+    <div class="form-row"><div class="form-group"><label class="form-label">Due Date</label><input class="form-input" type="date" id="rem-date"></div><div class="form-group"><label class="form-label">Priority</label><select class="form-select" id="rem-priority"><option value="high">High</option><option value="medium" selected>Medium</option><option value="low">Low</option></select></div></div>
+    <div class="form-group"><label class="form-label">Notes</label><textarea class="form-textarea" id="rem-notes" placeholder="Context…"></textarea></div>
+    <div class="modal-actions"><button class="btn" onclick="closeModal('modal-reminder')">Cancel</button><button class="btn btn-primary" onclick="saveReminder()">Save</button></div>
+  </div>
+</div>
+
+<!-- Follow-up -->
+<div class="modal-overlay" id="modal-followup">
+  <div class="modal">
+    <div class="modal-title">↪ Add Follow-up</div>
+    <div class="form-row"><div class="form-group"><label class="form-label">Contact</label><input class="form-input" id="fu-name" placeholder="Name"></div><div class="form-group"><label class="form-label">Company</label><input class="form-input" id="fu-company" placeholder="Company"></div></div>
+    <div class="form-row"><div class="form-group"><label class="form-label">Topic</label><input class="form-input" id="fu-topic" placeholder="e.g. MoU Discussion"></div><div class="form-group"><label class="form-label">Channel</label><select class="form-select" id="fu-channel"><option>Email</option><option>Phone</option><option>WhatsApp</option><option>Meeting</option><option>LinkedIn</option></select></div></div>
+    <div class="form-row"><div class="form-group"><label class="form-label">Due Date</label><input class="form-input" type="date" id="fu-date"></div><div class="form-group"><label class="form-label">Status</label><select class="form-select" id="fu-status"><option>Pending</option><option>Sent</option><option>Responded</option><option>Closed</option></select></div></div>
+    <div class="modal-actions"><button class="btn" onclick="closeModal('modal-followup')">Cancel</button><button class="btn btn-primary" onclick="saveFollowup()">Save</button></div>
+  </div>
+</div>
+
+<!-- Note -->
+<div class="modal-overlay" id="modal-note">
+  <div class="modal">
+    <div class="modal-title">📝 Add Note</div>
+    <div class="form-row"><div class="form-group"><label class="form-label">Title</label><input class="form-input" id="note-title" placeholder="Meeting / topic name"></div><div class="form-group"><label class="form-label">Cluster</label><select class="form-select" id="note-cluster"><option value="all">General</option><option value="bangalore">Bangalore</option><option value="mysuru">Mysuru</option><option value="mangaluru">Mangaluru</option><option value="hdb">HDB</option><option value="kalaburagi">Kalaburagi</option><option value="tumakuru">Tumakuru</option><option value="shivamogga">Shivamogga</option></select></div></div>
+    <div class="form-group"><label class="form-label">Content</label><textarea class="form-textarea" id="note-content" style="min-height:140px" placeholder="Notes, action items, decisions…"></textarea></div>
+    <div class="modal-actions"><button class="btn" onclick="closeModal('modal-note')">Cancel</button><button class="btn btn-primary" onclick="saveNote()">Save</button></div>
+  </div>
+</div>
+
+<!-- Contact -->
+<div class="modal-overlay" id="modal-contact">
+  <div class="modal">
+    <div class="modal-title">👤 Add Contact</div>
+    <div class="form-row"><div class="form-group"><label class="form-label">Full Name</label><input class="form-input" id="ct-name" placeholder="Name"></div><div class="form-group"><label class="form-label">Organisation</label><input class="form-input" id="ct-org" placeholder="Company / Dept"></div></div>
+    <div class="form-row"><div class="form-group"><label class="form-label">Role</label><input class="form-input" id="ct-role" placeholder="CEO, IAS, Director…"></div><div class="form-group"><label class="form-label">Type</label><select class="form-select" id="ct-type"><option>Government</option><option>Industry</option><option>NRI</option><option>Media</option><option>Academic</option><option>Internal</option></select></div></div>
+    <div class="form-row"><div class="form-group"><label class="form-label">Phone</label><input class="form-input" id="ct-phone" placeholder="+91 …"></div><div class="form-group"><label class="form-label">Email</label><input class="form-input" id="ct-email" placeholder="email@org.com"></div></div>
+    <div class="form-group"><label class="form-label">Cluster</label><select class="form-select" id="ct-cluster"><option value="all">General</option><option value="bangalore">Bangalore</option><option value="mysuru">Mysuru</option><option value="mangaluru">Mangaluru</option><option value="hdb">HDB</option><option value="kalaburagi">Kalaburagi</option><option value="tumakuru">Tumakuru</option><option value="shivamogga">Shivamogga</option></select></div>
+    <div class="modal-actions"><button class="btn" onclick="closeModal('modal-contact')">Cancel</button><button class="btn btn-primary" onclick="saveContact()">Save</button></div>
+  </div>
+</div>
+
+<!-- Policy App -->
+<div class="modal-overlay" id="modal-policy-app">
+  <div class="modal">
+    <div class="modal-title">⚖ Add Policy Application</div>
+    <div class="form-row"><div class="form-group"><label class="form-label">Company</label><input class="form-input" id="pa-company" placeholder="Company name"></div><div class="form-group"><label class="form-label">Policy</label><select class="form-select" id="pa-policy"><option>Karnataka IT/ITeS Policy 2024</option><option>Karnataka Startup Policy 2022</option><option>Karnataka GCC Policy 2024</option><option>KIADB Land Allotment</option><option>Other</option></select></div></div>
+    <div class="form-row"><div class="form-group"><label class="form-label">Category</label><select class="form-select" id="pa-cat"><option value="startup">Startup</option><option value="it">IT / ITeS</option><option value="gcc">GCC</option></select></div><div class="form-group"><label class="form-label">Applied</label><select class="form-select" id="pa-applied"><option value="yes">Yes</option><option value="no">No</option><option value="pending">Pending</option></select></div></div>
+    <div class="form-row"><div class="form-group"><label class="form-label">Date Applied</label><input class="form-input" type="date" id="pa-date"></div><div class="form-group"><label class="form-label">Status</label><select class="form-select" id="pa-status"><option>In Review</option><option>Approved</option><option>Rejected</option><option>Disbursed</option><option>Not Started</option></select></div></div>
+    <div class="form-group"><label class="form-label">Details</label><textarea class="form-textarea" id="pa-details" placeholder="Policy details, incentive type…"></textarea></div>
+    <div class="form-group"><label class="form-label">Notes</label><textarea class="form-textarea" id="pa-notes" placeholder="Additional notes…"></textarea></div>
+    <div class="modal-actions"><button class="btn" onclick="closeModal('modal-policy-app')">Cancel</button><button class="btn btn-primary" onclick="savePolicyApp()">Save</button></div>
+  </div>
+</div>
+
+<!-- NRI Member -->
+<div class="modal-overlay" id="modal-nri">
+  <div class="modal">
+    <div class="modal-title">◈ Add NRI Member</div>
+    <div class="form-row"><div class="form-group"><label class="form-label">Full Name</label><input class="form-input" id="nri-name" placeholder="Name"></div><div class="form-group"><label class="form-label">Country</label><input class="form-input" id="nri-country" placeholder="USA, UAE, UK…"></div></div>
+    <div class="form-row"><div class="form-group"><label class="form-label">Organisation</label><input class="form-input" id="nri-org" placeholder="e.g. Google"></div><div class="form-group"><label class="form-label">Interest Area</label><select class="form-select" id="nri-interest"><option>IT / Tech</option><option>Agritech</option><option>Manufacturing</option><option>Real Estate</option><option>Healthcare</option><option>Education</option><option>General</option></select></div></div>
+    <div class="form-row"><div class="form-group"><label class="form-label">Committed (₹Cr)</label><input class="form-input" type="number" id="nri-commit" placeholder="0"></div><div class="form-group"><label class="form-label">Target Cluster</label><select class="form-select" id="nri-cluster"><option value="all">Any</option><option value="bangalore">Bangalore</option><option value="mysuru">Mysuru</option><option value="mangaluru">Mangaluru</option><option value="hdb">HDB</option><option value="kalaburagi">Kalaburagi</option><option value="tumakuru">Tumakuru</option><option value="shivamogga">Shivamogga</option></select></div></div>
+    <div class="modal-actions"><button class="btn" onclick="closeModal('modal-nri')">Cancel</button><button class="btn btn-primary" onclick="saveNRI()">Save</button></div>
+  </div>
+</div>
+
+<!-- NRI Event -->
+<div class="modal-overlay" id="modal-nri-event">
+  <div class="modal">
+    <div class="modal-title">◉ Add Forum Event</div>
+    <div class="form-row"><div class="form-group"><label class="form-label">Event Name</label><input class="form-input" id="nev-name" placeholder="e.g. Karnataka NRI Summit Dubai"></div><div class="form-group"><label class="form-label">Date</label><input class="form-input" type="date" id="nev-date"></div></div>
+    <div class="form-row"><div class="form-group"><label class="form-label">Location</label><input class="form-input" id="nev-location" placeholder="City, Country"></div><div class="form-group"><label class="form-label">Expected Attendees</label><input class="form-input" type="number" id="nev-attendees" placeholder="0"></div></div>
+    <div class="form-group"><label class="form-label">Notes</label><textarea class="form-textarea" id="nev-notes"></textarea></div>
+    <div class="modal-actions"><button class="btn" onclick="closeModal('modal-nri-event')">Cancel</button><button class="btn btn-primary" onclick="saveNRIEvent()">Save</button></div>
+  </div>
+</div>
+
+<!-- Event -->
+<div class="modal-overlay" id="modal-event">
+  <div class="modal">
+    <div class="modal-title">📅 Add Event / Meeting</div>
+    <div class="form-row"><div class="form-group"><label class="form-label">Event Name</label><input class="form-input" id="ev-name" placeholder="e.g. Invest Karnataka Roadshow"></div><div class="form-group"><label class="form-label">Type</label><select class="form-select" id="ev-type"><option>Roadshow</option><option>Forum</option><option>Meeting</option><option>Site Visit</option><option>MoU Signing</option><option>Workshop</option><option>Other</option></select></div></div>
+    <div class="form-row"><div class="form-group"><label class="form-label">Date</label><input class="form-input" type="date" id="ev-date"></div><div class="form-group"><label class="form-label">Cluster</label><select class="form-select" id="ev-cluster"><option value="all">General</option><option value="bangalore">Bangalore</option><option value="mysuru">Mysuru</option><option value="mangaluru">Mangaluru</option><option value="hdb">HDB</option><option value="kalaburagi">Kalaburagi</option><option value="tumakuru">Tumakuru</option><option value="shivamogga">Shivamogga</option></select></div></div>
+    <div class="form-group"><label class="form-label">Notes</label><textarea class="form-textarea" id="ev-notes"></textarea></div>
+    <div class="modal-actions"><button class="btn" onclick="closeModal('modal-event')">Cancel</button><button class="btn btn-primary" onclick="saveEvent()">Save</button></div>
+  </div>
+</div>
+
+<!-- Activity -->
+<div class="modal-overlay" id="modal-activity">
+  <div class="modal">
+    <div class="modal-title">◎ Log Activity</div>
+    <div class="form-group"><label class="form-label">Title</label><input class="form-input" id="act-title" placeholder="e.g. Site visit to Mysuru KIADB"></div>
+    <div class="form-row"><div class="form-group"><label class="form-label">Type</label><select class="form-select" id="act-type"><option>Meeting</option><option>Site Visit</option><option>Call</option><option>Event</option><option>MoU Signing</option><option>Policy Update</option><option>Other</option></select></div><div class="form-group"><label class="form-label">Cluster</label><select class="form-select" id="act-cluster"><option value="all">General</option><option value="bangalore">Bangalore</option><option value="mysuru">Mysuru</option><option value="mangaluru">Mangaluru</option><option value="hdb">HDB</option><option value="kalaburagi">Kalaburagi</option><option value="tumakuru">Tumakuru</option><option value="shivamogga">Shivamogga</option></select></div></div>
+    <div class="form-group"><label class="form-label">Description</label><textarea class="form-textarea" id="act-desc" placeholder="What happened, key takeaways…"></textarea></div>
+    <div class="modal-actions"><button class="btn" onclick="closeModal('modal-activity')">Cancel</button><button class="btn btn-primary" onclick="saveActivity()">Save</button></div>
+  </div>
+</div>
+
+<!-- Cluster Event Add -->
+<div class="modal-overlay" id="modal-cluster-event">
+  <div class="modal">
+    <div class="modal-title">◉ Add Cluster Event</div>
+    <div class="form-row"><div class="form-group"><label class="form-label">Event Name</label><input class="form-input" id="ce-name" placeholder="e.g. Mysuru Big Tech Show"></div><div class="form-group"><label class="form-label">Cluster</label><select class="form-select" id="ce-cluster"><option value="mysuru">Mysuru</option><option value="mangaluru">Mangaluru</option><option value="hdb">HDB</option><option value="kalaburagi">Kalaburagi</option><option value="tumakuru">Tumakuru</option><option value="shivamogga">Shivamogga</option></select></div></div>
+    <div class="form-row"><div class="form-group"><label class="form-label">Date</label><input class="form-input" type="date" id="ce-date"></div><div class="form-group"><label class="form-label">Venue</label><input class="form-input" id="ce-venue" placeholder="Venue / Location"></div></div>
+    <div class="form-group"><label class="form-label">Description</label><textarea class="form-textarea" id="ce-desc"></textarea></div>
+    <div class="modal-actions"><button class="btn" onclick="closeModal('modal-cluster-event')">Cancel</button><button class="btn btn-primary" onclick="saveClusterEvent()">Save</button></div>
+  </div>
+</div>
+
+<!-- Cluster Event Sub-items (Speaker/Task/Agenda) -->
+<div class="modal-overlay" id="modal-ce-item">
+  <div class="modal">
+    <div class="modal-title" id="ce-item-title">Add Item</div>
+    <div id="ce-item-form"></div>
+    <div class="modal-actions"><button class="btn" onclick="closeModal('modal-ce-item')">Cancel</button><button class="btn btn-primary" onclick="saveCEItem()">Save</button></div>
+  </div>
+</div>
+
+<!-- Cluster Member -->
+<div class="modal-overlay" id="modal-cluster-member">
+  <div class="modal">
+    <div class="modal-title">👤 Add Team Member</div>
+    <div class="form-row"><div class="form-group"><label class="form-label">Name</label><input class="form-input" id="cm-name" placeholder="Name"></div><div class="form-group"><label class="form-label">Role</label><input class="form-input" id="cm-role" placeholder="e.g. Cluster Lead"></div></div>
+    <div class="form-group"><label class="form-label">Email</label><input class="form-input" id="cm-email" placeholder="email@kdem.in"></div>
+    <input type="hidden" id="cm-cluster">
+    <div class="modal-actions"><button class="btn" onclick="closeModal('modal-cluster-member')">Cancel</button><button class="btn btn-primary" onclick="saveClusterMember()">Save</button></div>
+  </div>
+</div>
+
+<script>
+// ── DATA STORE ──
+const CL = {bangalore:'Bangalore',mysuru:'Mysuru',mangaluru:'Mangaluru',hdb:'Hubli-Dharwad-Belagavi',kalaburagi:'Kalaburagi',tumakuru:'Tumakuru',shivamogga:'Shivamogga',all:'All Clusters'};
+const CLUSTER_KEYS = ['bangalore','mysuru','mangaluru','hdb','kalaburagi','tumakuru','shivamogga'];
+const CLCOLOR = {bangalore:'blue',mysuru:'purple',mangaluru:'teal',hdb:'gold',kalaburagi:'orange',tumakuru:'green',shivamogga:'red',all:'gray'};
+
+function ls(k){return JSON.parse(localStorage.getItem('bb2_'+k)||'[]')}
+function ss(k,v){localStorage.setItem('bb2_'+k,JSON.stringify(v))}
+
+let tasks=ls('tasks'), companies=ls('companies'), activities=ls('activities');
+let reminders=ls('reminders'), followups=ls('followups'), notes=ls('notes');
+let contacts=ls('contacts'), policyApps=ls('policyapps'), nriMembers=ls('nri');
+let nriEvents=ls('nrievents'), events=ls('events'), dcs=ls('dcs');
+let startups=ls('startups'), esdm=ls('esdm'), clusterEvents=ls('clusterevents');
+let clusterMembers=ls('clustermembers');
+// per-cluster-event sub items stored per event id
+let ceItems=JSON.parse(localStorage.getItem('bb2_ceitems')||'{}');
+
+let activeSection='overview';
+let activeCluster='all';
+let activeCEEventId=null, activeCETab='agenda', activeCEItemType='agenda';
+
+// ── SEED ──
+function seed(){
+  if(!companies.length){
+    companies=[
+      {id:1,name:'Infosys BPM',sector:'IT / ITeS',cluster:'mysuru',stage:'committed',invest:500,jobs:2000,contact:'Vikram R.',email:'vikram@infosys.com',notes:'MoU signed Feb 2025'},
+      {id:2,name:'Wipro GCC',sector:'GCC',cluster:'mangaluru',stage:'engaged',invest:200,jobs:800,contact:'Priya K.',email:'priya@wipro.com',notes:'Site shortlisted'},
+      {id:3,name:'TVS Motor',sector:'Manufacturing',cluster:'hdb',stage:'committed',invest:700,jobs:3500,contact:'Anil B.',email:'anil@tvsmotor.com',notes:'Land allocated'},
+      {id:4,name:'Amazon Data',sector:'Data Centre',cluster:'tumakuru',stage:'prospect',invest:1200,jobs:400,contact:'James H.',email:'james@amazon.com',notes:'Initial discussions'},
+    ];ss('companies',companies);
+  }
+  if(!startups.length){
+    startups=[
+      {id:1,name:'AgriSense',sector:'Agritech',cluster:'kalaburagi',stage:'Revenue',founder:'Ravi K.',funding:80,notes:'IoT soil monitoring'},
+      {id:2,name:'MediTrack',sector:'Healthtech',cluster:'mysuru',stage:'Scaling',founder:'Anitha S.',funding:200,notes:'Hospital supply chain'},
+    ];ss('startups',startups);
+  }
+  if(!activities.length){
+    activities=[
+      {id:1,title:'Mysuru KIADB site visit',type:'Site Visit',cluster:'mysuru',desc:'4 plots identified in Sector-D',date:new Date().toISOString()},
+      {id:2,title:'GCC Policy workshop, Bengaluru',type:'Event',cluster:'all',desc:'Attended DPIT workshop',date:new Date(Date.now()-86400000).toISOString()},
+    ];ss('activities',activities);
+  }
+  if(!reminders.length){
+    reminders=[
+      {id:1,title:'Follow up: Amazon DC Tumakuru',date:daysFrom(3),priority:'high',notes:'Check MoU draft',done:false},
+      {id:2,title:'Send Kalaburagi investor brief',date:daysFrom(5),priority:'medium',notes:'',done:false},
+      {id:3,title:'Submit BB monthly report to MD',date:daysFrom(7),priority:'high',notes:'',done:false},
+    ];ss('reminders',reminders);
+  }
+  if(!policyApps.length){
+    policyApps=[
+      {id:1,company:'Infosys BPM',policy:'Karnataka IT/ITeS Policy 2024',cat:'it',details:'Capital subsidy 20%, stamp duty waiver',applied:'yes',date:'2025-03-10',status:'Approved',notes:'Disbursement pending'},
+      {id:2,company:'AgriSense',policy:'Karnataka Startup Policy 2022',cat:'startup',details:'Seed fund ₹40L applied',applied:'yes',date:'2025-01-20',status:'In Review',notes:'Additional docs submitted'},
+      {id:3,company:'Wipro GCC',policy:'Karnataka GCC Policy 2024',cat:'gcc',details:'Land concessional rate & tax exemption',applied:'pending',date:'',status:'Not Started',notes:'Shortlisting underway'},
+    ];ss('policyapps',policyApps);
+  }
+  if(!nriMembers.length){
+    nriMembers=[
+      {id:1,name:'Dr. Suresh Hegde',country:'USA',org:'Google',interest:'IT / Tech',commit:50,cluster:'mangaluru'},
+      {id:2,name:'Ravi Nair',country:'UAE',org:'Emaar',interest:'Real Estate',commit:100,cluster:'mysuru'},
+    ];ss('nri',nriMembers);
+  }
+  if(!dcs.length){
+    dcs=[
+      {id:1,name:'Mysuru Edge DC',operator:'NTT Data',cluster:'mysuru',status:'planning',mw:20,invest:600,land:12,golive:'2026-12-01',notes:'KIADB Sector-B land identified'},
+      {id:2,name:'Tumakuru Cloud Park',operator:'CtrlS',cluster:'tumakuru',status:'prospect',mw:50,invest:1500,land:30,golive:'2027-06-01',notes:'MoU discussions ongoing'},
+      {id:3,name:'Mangaluru DC Hub',operator:'Yotta',cluster:'mangaluru',status:'construction',mw:200,invest:4000,land:60,golive:'2026-03-01',notes:'On track'},
+      {id:4,name:'HDB Tech Park DC',operator:'STT GDC',cluster:'hdb',status:'prospect',mw:140,invest:2800,land:45,golive:'2028-01-01',notes:'EIA underway'},
+    ];ss('dcs',dcs);
+  }
+  if(!events.length){
+    events=[
+      {id:1,name:'Invest Karnataka Roadshow — Mysuru',type:'Roadshow',date:'2025-05-28',cluster:'mysuru',notes:'Target 20 companies'},
+      {id:2,name:'NRI Forum — Dubai Chapter',type:'Forum',date:'2025-06-15',cluster:'all',notes:'40 NRI members expected'},
+      {id:3,name:'BB Policy Workshop',type:'Workshop',date:'2025-05-22',cluster:'all',notes:'DPIT co-hosted'},
+    ];ss('events',events);
+  }
+  if(!clusterEvents.length){
+    clusterEvents=[
+      {id:1,name:'Mysuru Big Tech Show',cluster:'mysuru',date:'2025-07-15',venue:'Mysuru Palace Grounds',desc:'Annual flagship tech event for Mysuru cluster featuring top IT companies, product launches and policy announcements.'},
+      {id:2,name:'Mangaluru Maritime & Tech Summit',cluster:'mangaluru',date:'2025-08-10',venue:'MCAT Convention Centre',desc:'Convergence of port logistics, IT and startup ecosystem around Mangaluru.'},
+      {id:3,name:'HDB Industrial Expo',cluster:'hdb',date:'2025-09-05',venue:'KDCC Bank Ground, Dharwad',desc:'Manufacturing and ESDM showcase for HDB cluster.'},
+      {id:4,name:'Kalaburagi Agri-Tech Conclave',cluster:'kalaburagi',date:'2025-10-20',venue:'Gulbarga University Grounds',desc:'Agritech startup showcase and farmer connect for Kalaburagi.'},
+      {id:5,name:'Tumakuru Smart Factory Expo',cluster:'tumakuru',date:'2025-11-08',venue:'KIADB Tumakuru',desc:'Data centre, EV and smart manufacturing focus.'},
+    ];ss('clusterevents',clusterEvents);
+  }
+  if(!contacts.length){
+    contacts=[
+      {id:1,name:'K. Ramachandra',org:'KIADB',role:'DGM Allocation',phone:'+91 80 2230 xxxx',email:'dgm@kiadb.in',cluster:'mysuru',type:'Government'},
+      {id:2,name:'Priya K.',org:'Wipro',role:'Head – Site',phone:'+91 98xx xxxx',email:'priya@wipro.com',cluster:'mangaluru',type:'Industry'},
+    ];ss('contacts',contacts);
+  }
+}
+
+// ── INIT ──
+document.addEventListener('DOMContentLoaded',()=>{
+  seed();
+  setupNav();
+  renderOverview();
+  renderClusterDetail('all',document.querySelector('[data-cluster="all"]'));
+  renderClusterEvents();
+  renderNRI();
+  renderBBCompanies();
+  renderPolicyApps('all');
+  renderReminders();
+  renderFollowups();
+  renderNotes();
+  renderContacts();
+  renderSubPages();
+});
+
+function setupNav(){
+  document.querySelectorAll('.nav-item').forEach(el=>{
+    el.addEventListener('click',()=>switchSection(el.dataset.section));
+  });
+  document.querySelectorAll('.modal-overlay').forEach(m=>{
+    m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('open')});
+  });
+}
+
+function switchSection(name){
+  activeSection=name;
+  document.querySelectorAll('.nav-item').forEach(el=>el.classList.toggle('active',el.dataset.section===name));
+  document.querySelectorAll('.section').forEach(el=>el.classList.toggle('active',el.id==='section-'+name));
+  const titles={overview:'BB Overview',clusters:'Cluster Wise',clusterevents:'Cluster Events',communications:'Communications',policy:'Policy Tracker',nri:'NRI Forums',bb:'Beyond Bengaluru'};
+  document.getElementById('topbar-title').textContent=titles[name]||name;
+  document.getElementById('topbar-cluster-wrap').style.display=name==='clusters'?'block':'none';
+}
+
+function switchCluster(val){activeCluster=val;}
+
+// ── OVERVIEW ──
+function renderOverview(){
+  document.getElementById('ov-nri').textContent=nriMembers.length;
+  renderCalendar('ov-cal-labels','ov-cal-body');
+  renderOvEvents();
+  renderOvTimeline();
+}
+
+function renderOvEvents(){
+  const el=document.getElementById('ov-events-list');
+  const sorted=[...events].sort((a,b)=>a.date>b.date?1:-1);
+  el.innerHTML=sorted.length?sorted.map(e=>`
+    <div style="padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px">
+      <div style="min-width:44px;text-align:center">
+        <div style="font-size:10px;text-transform:uppercase;letter-spacing:0.06em;color:var(--text3);font-weight:600">${monthAbbr(e.date)}</div>
+        <div style="font-size:20px;font-weight:700;font-family:var(--mono);color:var(--text);line-height:1">${dayNum(e.date)}</div>
+      </div>
+      <div style="flex:1">
+        <div style="font-size:13px;font-weight:600;color:var(--text)">${e.name}</div>
+        <div style="font-size:11px;color:var(--text3);margin-top:2px">${e.type} · ${CL[e.cluster]||e.cluster}</div>
+      </div>
+      <span class="tag tag-${CLCOLOR[e.cluster]||'gray'}" style="font-size:10px">${CL[e.cluster]||e.cluster}</span>
+    </div>`).join('') : '<div class="empty-state"><div class="empty-icon">📅</div><div class="empty-text">No events yet</div></div>';
+}
+
+function renderOvTimeline(){
+  const el=document.getElementById('ov-timeline');
+  const show=[...activities].reverse().slice(0,5);
+  el.innerHTML=show.length?show.map((a,i)=>`
+    <div class="timeline-item ${i===0?'active-t':'done'}">
+      <div class="timeline-date">${fmtDate(a.date)} · ${a.type}</div>
+      <div class="timeline-title">${a.title}</div>
+      <div class="timeline-desc">${a.desc||''}</div>
+    </div>`).join(''):'<div style="font-size:12px;color:var(--text3)">No activity logged yet</div>';
+}
+
+// ── CALENDAR ──
+function renderCalendar(lblId,bodyId){
+  const lbl=document.getElementById(lblId);
+  const body=document.getElementById(bodyId);
+  if(!lbl||!body)return;
+  lbl.innerHTML=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map(d=>`<div class="cal-day-label">${d}</div>`).join('');
+  const now=new Date();
+  const year=now.getFullYear(),month=now.getMonth();
+  const firstDay=new Date(year,month,1).getDay();
+  const lastDate=new Date(year,month+1,0).getDate();
+  const prevLast=new Date(year,month,0).getDate();
+  const eventDays=new Set(events.map(e=>e.date?+e.date.split('-')[2]:null).filter(Boolean));
+  let html='';
+  for(let i=0;i<firstDay;i++)html+=`<div class="cal-day other-month">${prevLast-firstDay+i+1}</div>`;
+  for(let d=1;d<=lastDate;d++){
+    const isToday=d===now.getDate();
+    const hasEv=eventDays.has(d);
+    html+=`<div class="cal-day${isToday?' today':''}${hasEv?' has-event':''}">${d}</div>`;
+  }
+  const rem=42-firstDay-lastDate;
+  for(let d=1;d<=rem;d++)html+=`<div class="cal-day other-month">${d}</div>`;
+  body.innerHTML=html;
+}
+
+// ── CLUSTERS ──
+function renderClusterDetail(cluster,tabEl){
+  activeCluster=cluster;
+  if(tabEl){document.querySelectorAll('#cluster-tabs .tab').forEach(t=>t.classList.remove('active'));tabEl.classList.add('active');}
+  const body=document.getElementById('cluster-detail-body');
+  if(cluster==='datacentres'){
+    renderDCPanel(body);return;
+  }
+  const filtCo=cluster==='all'?companies:companies.filter(c=>c.cluster===cluster);
+  const filtTasks=cluster==='all'?tasks:tasks.filter(t=>t.cluster===cluster||t.cluster==='all');
+  const filtEvents=cluster==='all'?events:events.filter(e=>e.cluster===cluster||e.cluster==='all');
+  const members=(clusterMembers||[]).filter(m=>m.cluster===cluster);
+
+  body.innerHTML=`
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+      <div style="display:flex;align-items:center;gap:10px">
+        <span class="tag tag-${CLCOLOR[cluster]||'blue'}" style="font-size:13px;padding:4px 12px">${CL[cluster]||'All Clusters'}</span>
+        ${cluster!=='all'?`<span style="font-size:12px;color:var(--text3)">4–6 Districts</span>`:''}
+      </div>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-sm" onclick="openClusterMemberModal('${cluster}')">+ Team Member</button>
+        <button class="btn btn-sm btn-primary" onclick="openTaskModal('${cluster}')">+ Task</button>
+        <button class="btn btn-sm btn-gold" onclick="openCompanyModal()">+ Company</button>
+      </div>
+    </div>
+
+    ${members.length?`<div class="panel" style="margin-bottom:16px"><div class="panel-header"><div class="panel-title">👥 Team Members</div></div><div class="panel-body" style="display:flex;flex-wrap:wrap;gap:10px">
+    ${members.map(m=>`<div style="display:flex;align-items:center;gap:8px;background:var(--bg4);border-radius:8px;padding:8px 12px"><div class="avatar av-blue">${initials(m.name)}</div><div><div style="font-size:13px;font-weight:600;color:var(--text)">${m.name}</div><div style="font-size:11px;color:var(--text3)">${m.role||'–'} ${m.email?'· '+m.email:''}</div></div></div>`).join('')}
+    </div></div>`:''}
+
+    <div class="grid-2">
+      <div class="panel">
+        <div class="panel-header"><div class="panel-title">⬢ Companies (${filtCo.length})</div></div>
+        <div style="overflow-x:auto">
+          <table class="data-table"><thead><tr><th>Company</th><th>Sector</th><th>Stage</th><th>Investment</th><th>Priority</th><th>Date</th><th>Notes</th></tr></thead>
+          <tbody>${filtCo.length?filtCo.map(c=>`<tr><td>${c.name}</td><td><span class="tag tag-blue" style="font-size:10px">${c.sector}</span></td><td>${stageTag(c.stage)}</td><td style="font-family:var(--mono);color:var(--green)">₹${c.invest}Cr</td><td>–</td><td>–</td><td style="font-size:12px;color:var(--text3);max-width:180px;white-space:normal">${c.notes||'–'}</td></tr>`).join(''):emptyRow(7,'No companies yet')}</tbody>
+          </table>
+        </div>
+      </div>
+      <div>
+        <div class="panel" style="margin-bottom:16px">
+          <div class="panel-header"><div class="panel-title">✓ Tasks (${filtTasks.length})</div></div>
+          <div style="overflow-x:auto">
+            <table class="data-table"><thead><tr><th>Task</th><th>Owner</th><th>Priority</th><th>Due</th><th>Status</th><th>Notes</th></tr></thead>
+            <tbody>${filtTasks.length?filtTasks.map(t=>`<tr><td>${t.title}</td><td><span class="tag tag-gray" style="font-size:10px">${t.owner}</span></td><td><span class="p-dot p-${t.priority}"></span>${cap(t.priority)}</td><td style="font-family:var(--mono);font-size:11px">${t.due||'–'}</td><td>${statusTag(t.status)}</td><td style="font-size:12px;color:var(--text3)">${t.notes||'–'}</td></tr>`).join(''):emptyRow(6,'No tasks yet')}</tbody>
+          </table></div>
+        </div>
+        <div class="panel">
+          <div class="panel-header"><div class="panel-title">📅 Events (${filtEvents.length})</div><button class="btn btn-sm" onclick="openEventModal()">+ Event</button></div>
+          <div class="panel-body panel-body-flush">
+            ${filtEvents.map(e=>`<div style="padding:10px 16px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center"><div style="font-size:13px;font-weight:500">${e.name}</div><div style="display:flex;gap:8px;align-items:center"><span class="tag tag-${CLCOLOR[e.cluster]||'gray'}" style="font-size:10px">${e.type}</span><span style="font-family:var(--mono);font-size:11px;color:var(--text3)">${e.date||'–'}</span></div></div>`).join('')||'<div class="empty-state"><div class="empty-text">No events</div></div>'}
+          </div>
+        </div>
+      </div>
+    </div>`;
+}
+
+function renderDCPanel(body){
+  const dcStatusColor={prospect:'gray',planning:'gold',construction:'orange',operational:'green'};
+  const dcStatusLabel={prospect:'Prospecting',planning:'Planning',construction:'Under Construction',operational:'Operational'};
+  body.innerHTML=`
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+      <span class="tag tag-teal" style="font-size:13px;padding:4px 12px">Data Centres</span>
+      <button class="btn btn-primary btn-sm" onclick="openDCModal()">+ Data Centre</button>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px">
+    ${dcs.map(d=>`<div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius2);padding:18px">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px">
+        <div style="font-size:14px;font-weight:700;color:var(--text)">${d.name}</div>
+        <span class="tag tag-${dcStatusColor[d.status]||'gray'}" style="font-size:10px">${dcStatusLabel[d.status]||d.status}</span>
+      </div>
+      <div style="font-size:12px;color:var(--text3);margin-bottom:12px">${CL[d.cluster]||d.cluster} · ${d.operator}</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <div style="background:var(--bg4);border-radius:8px;padding:8px 10px"><div style="font-size:10px;text-transform:uppercase;letter-spacing:0.07em;color:var(--text3)">Capacity</div><div style="font-size:15px;font-weight:700;font-family:var(--mono)">${d.mw} MW</div></div>
+        <div style="background:var(--bg4);border-radius:8px;padding:8px 10px"><div style="font-size:10px;text-transform:uppercase;letter-spacing:0.07em;color:var(--text3)">Investment</div><div style="font-size:15px;font-weight:700;font-family:var(--mono)">₹${d.invest}Cr</div></div>
+        <div style="background:var(--bg4);border-radius:8px;padding:8px 10px"><div style="font-size:10px;text-transform:uppercase;letter-spacing:0.07em;color:var(--text3)">Land</div><div style="font-size:15px;font-weight:700;font-family:var(--mono)">${d.land} Ac</div></div>
+        <div style="background:var(--bg4);border-radius:8px;padding:8px 10px"><div style="font-size:10px;text-transform:uppercase;letter-spacing:0.07em;color:var(--text3)">Go-Live</div><div style="font-size:12px;font-weight:600;color:var(--text)">${d.golive||'TBD'}</div></div>
+      </div>
+      ${d.notes?`<div style="font-size:11px;color:var(--text3);margin-top:10px;padding-top:10px;border-top:1px solid var(--border)">${d.notes}</div>`:''}
+    </div>`).join('')||'<div class="empty-state"><div class="empty-icon">▣</div><div class="empty-text">No data centres yet</div></div>'}
+    </div>`;
+}
+
+// ── CLUSTER EVENTS ──
+function renderClusterEvents(){
+  const el=document.getElementById('cluster-events-list');
+  el.innerHTML=clusterEvents.map(ev=>{
+    const items=ceItems[ev.id]||{agenda:[],speakers:[],tasks:[]};
+    const collapsed=localStorage.getItem('ce_collapsed_'+ev.id)==='true';
+    return `<div class="event-section-card" id="cec-${ev.id}">
+      <div class="event-section-header" onclick="toggleCECard(${ev.id})">
+        <div>
+          <div class="event-section-title">${ev.name}</div>
+          <div style="font-size:11px;color:var(--text3);margin-top:2px">${CL[ev.cluster]||ev.cluster} · ${ev.date||'TBD'} · ${ev.venue||''}</div>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <span class="tag tag-${CLCOLOR[ev.cluster]||'gray'}" style="font-size:10px">${CL[ev.cluster]||''}</span>
+          <span style="font-size:14px;color:var(--text3)">${collapsed?'▼':'▲'}</span>
+        </div>
+      </div>
+      <div class="event-section-body" id="ceb-${ev.id}" style="${collapsed?'display:none':''}">
+        <div style="display:flex;gap:8px;margin-bottom:14px;align-items:center">
+          <div class="event-sub-tabs">
+            <div class="event-sub-tab ${activeCEEventId===ev.id&&activeCETab==='agenda'?'active':''}" onclick="showCETab(${ev.id},'agenda',this)">Agenda</div>
+            <div class="event-sub-tab ${activeCEEventId===ev.id&&activeCETab==='speakers'?'active':''}" onclick="showCETab(${ev.id},'speakers',this)">Speakers</div>
+            <div class="event-sub-tab ${activeCEEventId===ev.id&&activeCETab==='tasks'?'active':''}" onclick="showCETab(${ev.id},'tasks',this)">Tasks</div>
+          </div>
+          <div style="margin-left:auto;display:flex;gap:6px">
+            <button class="btn btn-sm" onclick="openCEItemModal(${ev.id},'agenda')">+ Agenda</button>
+            <button class="btn btn-sm" onclick="openCEItemModal(${ev.id},'speakers')">+ Speaker</button>
+            <button class="btn btn-sm btn-primary" onclick="openCEItemModal(${ev.id},'tasks')">+ Task</button>
+          </div>
+        </div>
+        <div id="ce-tab-body-${ev.id}">
+          ${renderCETabBody(ev.id,'agenda')}
+        </div>
+      </div>
+    </div>`;
+  }).join('')||'<div class="empty-state"><div class="empty-icon">◉</div><div class="empty-text">No cluster events yet</div></div>';
+}
+
+function toggleCECard(id){
+  const body=document.getElementById('ceb-'+id);
+  const collapsed=body.style.display==='none';
+  body.style.display=collapsed?'':'none';
+  localStorage.setItem('ce_collapsed_'+id,collapsed?'false':'true');
+}
+
+function showCETab(evId,tab,el){
+  document.querySelectorAll(`#cec-${evId} .event-sub-tab`).forEach(t=>t.classList.remove('active'));
+  if(el)el.classList.add('active');
+  document.getElementById('ce-tab-body-'+evId).innerHTML=renderCETabBody(evId,tab);
+}
+
+function renderCETabBody(evId,tab){
+  const items=ceItems[evId]||{agenda:[],speakers:[],tasks:[]};
+  if(tab==='agenda'){
+    const list=items.agenda||[];
+    return list.length?`<table class="data-table"><thead><tr><th>#</th><th>Session</th><th>Time</th><th>Speaker/Lead</th><th>Duration</th><th>Notes</th></tr></thead><tbody>
+    ${list.map((a,i)=>`<tr><td style="font-family:var(--mono);color:var(--text3)">${i+1}</td><td>${a.session}</td><td style="font-family:var(--mono);font-size:11px">${a.time||'–'}</td><td>${a.speaker||'–'}</td><td>${a.duration||'–'}</td><td style="font-size:12px;color:var(--text3)">${a.notes||'–'}</td></tr>`).join('')}
+    </tbody></table>`:'<div class="empty-state" style="padding:20px"><div class="empty-text">No agenda items yet — click + Agenda</div></div>';
+  }
+  if(tab==='speakers'){
+    const list=items.speakers||[];
+    const spkStatusColor={Invited:'gold',Shortlisted:'blue',Confirmed:'green'};
+    return list.length?`<table class="data-table"><thead><tr><th>Name</th><th>Organisation</th><th>Topic</th><th>Status</th><th>Notes</th></tr></thead><tbody>
+    ${list.map(s=>`<tr><td>${s.name}</td><td>${s.org||'–'}</td><td>${s.topic||'–'}</td><td><span class="tag tag-${spkStatusColor[s.status]||'gray'}" style="font-size:10px">${s.status||'–'}</span></td><td style="font-size:12px;color:var(--text3)">${s.notes||'–'}</td></tr>`).join('')}
+    </tbody></table>`:'<div class="empty-state" style="padding:20px"><div class="empty-text">No speakers yet — click + Speaker</div></div>';
+  }
+  if(tab==='tasks'){
+    const list=items.tasks||[];
+    return list.length?`<table class="data-table"><thead><tr><th>Task</th><th>Responsible</th><th>Priority</th><th>Due</th><th>Status</th><th>Notes</th></tr></thead><tbody>
+    ${list.map(t=>`<tr><td>${t.task}</td><td>${t.owner||'–'}</td><td><span class="p-dot p-${t.priority||'medium'}"></span>${cap(t.priority||'medium')}</td><td style="font-family:var(--mono);font-size:11px">${t.due||'–'}</td><td>${statusTag(t.status||'todo')}</td><td style="font-size:12px;color:var(--text3)">${t.notes||'–'}</td></tr>`).join('')}
+    </tbody></table>`:'<div class="empty-state" style="padding:20px"><div class="empty-text">No tasks yet — click + Task</div></div>';
+  }
+  return '';
+}
+
+function openCEItemModal(evId,type){
+  activeCEEventId=evId;
+  activeCEItemType=type;
+  const labels={agenda:'Agenda Item',speakers:'Speaker',tasks:'Task / Responsibility'};
+  document.getElementById('ce-item-title').textContent='Add '+labels[type];
+  const forms={
+    agenda:`<div class="form-group"><label class="form-label">Session Title</label><input class="form-input" id="cei-session" placeholder="e.g. Opening Keynote"></div>
+    <div class="form-row"><div class="form-group"><label class="form-label">Time</label><input class="form-input" id="cei-time" placeholder="10:00 AM"></div><div class="form-group"><label class="form-label">Duration</label><input class="form-input" id="cei-duration" placeholder="30 min"></div></div>
+    <div class="form-group"><label class="form-label">Speaker / Lead</label><input class="form-input" id="cei-speaker" placeholder="Name"></div>
+    <div class="form-group"><label class="form-label">Notes</label><textarea class="form-textarea" id="cei-notes"></textarea></div>`,
+    speakers:`<div class="form-row"><div class="form-group"><label class="form-label">Name</label><input class="form-input" id="cei-name" placeholder="Speaker name"></div><div class="form-group"><label class="form-label">Organisation</label><input class="form-input" id="cei-org" placeholder="Company / Ministry"></div></div>
+    <div class="form-row"><div class="form-group"><label class="form-label">Topic</label><input class="form-input" id="cei-topic" placeholder="Talk topic"></div><div class="form-group"><label class="form-label">Status</label><select class="form-select" id="cei-status"><option>Invited</option><option>Shortlisted</option><option>Confirmed</option></select></div></div>
+    <div class="form-group"><label class="form-label">Notes</label><textarea class="form-textarea" id="cei-notes"></textarea></div>`,
+    tasks:`<div class="form-group"><label class="form-label">Task</label><input class="form-input" id="cei-task" placeholder="e.g. Book venue, Design banner…"></div>
+    <div class="form-row"><div class="form-group"><label class="form-label">Responsible</label><input class="form-input" id="cei-owner" placeholder="Name / Team"></div><div class="form-group"><label class="form-label">Priority</label><select class="form-select" id="cei-priority"><option value="high">High</option><option value="medium" selected>Medium</option><option value="low">Low</option></select></div></div>
+    <div class="form-row"><div class="form-group"><label class="form-label">Due Date</label><input class="form-input" type="date" id="cei-due"></div><div class="form-group"><label class="form-label">Status</label><select class="form-select" id="cei-tstatus"><option value="todo">To Do</option><option value="inprogress">In Progress</option><option value="done">Done</option></select></div></div>
+    <div class="form-group"><label class="form-label">Notes</label><textarea class="form-textarea" id="cei-notes"></textarea></div>`,
+  };
+  document.getElementById('ce-item-form').innerHTML=forms[type]||'';
+  openModal('modal-ce-item');
+}
+
+function saveCEItem(){
+  const evId=activeCEEventId;
+  const type=activeCEItemType;
+  if(!ceItems[evId])ceItems[evId]={agenda:[],speakers:[],tasks:[]};
+  let item={};
+  if(type==='agenda'){item={session:v('cei-session'),time:v('cei-time'),duration:v('cei-duration'),speaker:v('cei-speaker'),notes:v('cei-notes')};if(!item.session)return alert('Session title required');}
+  if(type==='speakers'){item={name:v('cei-name'),org:v('cei-org'),topic:v('cei-topic'),status:v('cei-status'),notes:v('cei-notes')};if(!item.name)return alert('Name required');}
+  if(type==='tasks'){item={task:v('cei-task'),owner:v('cei-owner'),priority:v('cei-priority'),due:v('cei-due'),status:v('cei-tstatus'),notes:v('cei-notes')};if(!item.task)return alert('Task required');}
+  ceItems[evId][type].push(item);
+  localStorage.setItem('bb2_ceitems',JSON.stringify(ceItems));
+  closeModal('modal-ce-item');
+  renderClusterEvents();
+}
+
+// ── POLICY ──
+function renderPolicyApps(cat){
+  const tbody=document.getElementById('policy-tbody');
+  const list=cat==='all'?policyApps:policyApps.filter(p=>p.cat===cat);
+  const appliedColors={yes:'green',no:'gray',pending:'gold'};
+  const statusColors={'In Review':'gold','Approved':'green','Rejected':'red','Disbursed':'teal','Not Started':'gray'};
+  tbody.innerHTML=list.length?list.map(p=>`<tr>
+    <td>${p.company}</td>
+    <td style="font-size:12px">${p.policy}</td>
+    <td><span class="tag tag-${p.cat==='startup'?'green':p.cat==='it'?'blue':'purple'}" style="font-size:10px">${cap(p.cat)}</span></td>
+    <td style="font-size:12px;color:var(--text2);max-width:200px;white-space:normal">${p.details||'–'}</td>
+    <td><span class="tag tag-${appliedColors[p.applied]||'gray'}" style="font-size:10px">${cap(p.applied)}</span></td>
+    <td style="font-family:var(--mono);font-size:11px">${p.date||'–'}</td>
+    <td><span class="tag tag-${statusColors[p.status]||'gray'}" style="font-size:10px">${p.status||'–'}</span></td>
+    <td style="font-size:12px;color:var(--text3);max-width:160px;white-space:normal">${p.notes||'–'}</td>
+  </tr>`).join(''):emptyRow(8,'No applications yet — click + Application');
+}
+
+function filterPolicy(cat,el){
+  document.querySelectorAll('#policy-tabs .tab').forEach(t=>t.classList.remove('active'));
+  if(el)el.classList.add('active');
+  renderPolicyApps(cat);
+}
+
+// ── NRI ──
+function renderNRI(){
+  const el=document.getElementById('nri-members-list');
+  const sub=document.getElementById('sub-nri-list');
+  const avClasses=['av-blue','av-green','av-gold','av-purple'];
+  const html=nriMembers.length?nriMembers.map((m,i)=>`
+    <div class="member-card">
+      <div class="avatar ${avClasses[i%4]}">${initials(m.name)}</div>
+      <div style="flex:1">
+        <div style="font-size:13px;font-weight:600;color:var(--text)">${m.name}</div>
+        <div style="font-size:11px;color:var(--text3)">${m.org} · ${m.country} · ${m.interest}</div>
+      </div>
+      <div style="text-align:right">
+        <div style="font-size:13px;font-weight:700;font-family:var(--mono);color:var(--green)">₹${m.commit}Cr</div>
+        <div style="font-size:10px;color:var(--text3)">${CL[m.cluster]||m.cluster}</div>
+      </div>
+    </div>`).join('') : '<div class="empty-state"><div class="empty-icon">◈</div><div class="empty-text">No members yet</div></div>';
+  if(el)el.innerHTML=html;
+  if(sub)sub.innerHTML=html;
+  document.getElementById('ov-nri').textContent=nriMembers.length;
+
+  const evEl=document.getElementById('nri-events-list');
+  if(evEl)evEl.innerHTML=nriEvents.length?nriEvents.map(e=>`
+    <div style="padding:10px 0;border-bottom:1px solid var(--border)">
+      <div style="font-size:13px;font-weight:600;color:var(--text)">${e.name}</div>
+      <div style="font-size:11px;color:var(--text3);margin-top:2px">${e.date||'–'} · ${e.location||'–'} · ${e.attendees||0} expected</div>
+      ${e.notes?`<div style="font-size:12px;color:var(--text2);margin-top:3px">${e.notes}</div>`:''}
+    </div>`).join('') : '<div class="empty-state"><div class="empty-text">No forum events yet</div></div>';
+}
+
+// ── BB COMPANIES ──
+function renderBBCompanies(filter=''){
+  const tbody=document.getElementById('bb-companies-tbody');
+  const list=filter?companies.filter(c=>c.name.toLowerCase().includes(filter)):companies;
+  tbody.innerHTML=list.length?list.map(c=>`<tr>
+    <td>${c.name}</td>
+    <td><span class="tag tag-blue" style="font-size:10px">${c.sector}</span></td>
+    <td><span class="tag tag-${CLCOLOR[c.cluster]||'gray'}" style="font-size:10px">${CL[c.cluster]||c.cluster}</span></td>
+    <td>${stageTag(c.stage)}</td>
+    <td style="font-family:var(--mono);color:var(--green)">₹${c.invest}</td>
+    <td style="font-family:var(--mono)">${c.jobs||0}</td>
+    <td style="font-size:12px;color:var(--text2)">${c.contact||'–'}</td>
+    <td style="font-size:12px;color:var(--text3);max-width:200px;white-space:normal">${c.notes||'–'}</td>
+  </tr>`).join(''):emptyRow(8,'No companies yet');
+}
+
+function filterBBCompanies(v){renderBBCompanies(v.toLowerCase());}
+
+// ── COMMUNICATIONS ──
+function renderReminders(){
+  const el=document.getElementById('reminders-list');
+  if(!el)return;
+  const priColor={high:'red',medium:'gold',low:'green'};
+  el.innerHTML=reminders.length?reminders.map(r=>`
+    <div class="panel" style="margin-bottom:10px;${r.done?'opacity:0.45':''}">
+      <div class="panel-body" style="padding:12px 16px;display:flex;align-items:center;gap:12px">
+        <input type="checkbox" ${r.done?'checked':''} onchange="toggleReminder(${r.id})" style="width:16px;height:16px;cursor:pointer;accent-color:var(--accent)">
+        <div style="flex:1">
+          <div style="font-size:13px;font-weight:500;color:var(--text);${r.done?'text-decoration:line-through':''}">${r.title}</div>
+          <div style="font-size:11px;color:var(--text3);margin-top:2px">${r.date||'No date'}${r.notes?' · '+r.notes:''}</div>
+        </div>
+        <span class="tag tag-${priColor[r.priority]||'gray'}">${cap(r.priority)}</span>
+        <button class="btn btn-icon btn-sm" onclick="deleteReminder(${r.id})" style="color:var(--text3)">✕</button>
+      </div>
+    </div>`).join('') : '<div class="empty-state"><div class="empty-icon">🔔</div><div class="empty-text">No reminders set</div></div>';
+  updateCommBadge();
+}
+
+function toggleReminder(id){reminders=reminders.map(r=>r.id===id?{...r,done:!r.done}:r);ss('reminders',reminders);renderReminders();}
+function deleteReminder(id){reminders=reminders.filter(r=>r.id!==id);ss('reminders',reminders);renderReminders();}
+function updateCommBadge(){const n=reminders.filter(r=>!r.done).length;const b=document.getElementById('comm-badge');if(b){b.textContent=n;b.style.display=n?'':'none';}}
+
+function renderFollowups(){
+  const tbody=document.getElementById('followup-tbody');
+  if(!tbody)return;
+  const sc={Pending:'gold',Sent:'blue',Responded:'teal',Closed:'green'};
+  tbody.innerHTML=followups.length?followups.map(f=>`<tr><td>${f.name}</td><td>${f.company||'–'}</td><td>${f.topic||'–'}</td><td style="font-family:var(--mono);font-size:11px">${f.date||'–'}</td><td><span class="tag tag-gray" style="font-size:10px">${f.channel}</span></td><td><span class="tag tag-${sc[f.status]||'gray'}" style="font-size:10px">${f.status}</span></td></tr>`).join(''):emptyRow(6,'No follow-ups yet');
+}
+
+function renderNotes(){
+  const el=document.getElementById('notes-grid');
+  if(!el)return;
+  const accents=['var(--accent)','var(--teal)','var(--purple)','var(--gold)','var(--green)'];
+  el.innerHTML=notes.length?[...notes].reverse().map((n,i)=>`
+    <div style="background:var(--bg3);border:1px solid var(--border);border-left:3px solid ${accents[i%accents.length]};border-radius:var(--radius2);padding:14px 16px">
+      <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px">${n.title}</div>
+      <div style="font-size:10px;color:var(--text3);margin-bottom:8px">${CL[n.cluster]||n.cluster} · ${fmtDate(n.date)}</div>
+      <div style="font-size:12px;color:var(--text2);line-height:1.6;max-height:80px;overflow:hidden">${n.content}</div>
+    </div>`).join('') : '<div class="empty-state"><div class="empty-icon">📝</div><div class="empty-text">No notes yet</div></div>';
+}
+
+function renderContacts(filter=''){
+  const tbody=document.getElementById('contacts-tbody');
+  if(!tbody)return;
+  const f=filter.toLowerCase();
+  const list=f?contacts.filter(c=>c.name.toLowerCase().includes(f)||c.org.toLowerCase().includes(f)||c.role.toLowerCase().includes(f)):contacts;
+  const tc={Government:'blue',Industry:'green',NRI:'gold',Media:'purple',Academic:'teal',Internal:'gray'};
+  tbody.innerHTML=list.length?list.map(c=>`<tr><td>${c.name}</td><td>${c.org||'–'}</td><td style="color:var(--text3)">${c.role||'–'}</td><td style="font-family:var(--mono);font-size:11px">${c.phone||'–'}</td><td style="color:var(--accent);font-size:12px">${c.email||'–'}</td><td><span class="tag tag-${CLCOLOR[c.cluster]||'gray'}" style="font-size:10px">${CL[c.cluster]||c.cluster}</span></td><td><span class="tag tag-${tc[c.type]||'gray'}" style="font-size:10px">${c.type}</span></td></tr>`).join(''):emptyRow(7,'No contacts found');
+}
+function filterContacts(val){renderContacts(val);}
+
+function switchCommTab(name,el){
+  ['reminders','followups','calendar','notes','database'].forEach(t=>{
+    const d=document.getElementById('comm-'+t);
+    if(d)d.style.display=t===name?'':'none';
+  });
+  document.querySelectorAll('#section-communications .tab').forEach(t=>t.classList.remove('active'));
+  if(el)el.classList.add('active');
+  if(name==='calendar'){renderCalendar('comm-cal-labels','comm-cal-body');renderCommCalEvents();}
+}
+
+function renderCommCalEvents(){
+  const el=document.getElementById('comm-events-list');
+  if(!el)return;
+  el.innerHTML=events.map(e=>`<div style="padding:10px 16px;border-bottom:1px solid var(--border)"><div style="font-size:13px;font-weight:500">${e.name}</div><div style="font-size:11px;color:var(--text3)">${e.date||'–'} · ${e.type}</div></div>`).join('')||'<div class="empty-state"><div class="empty-text">No events</div></div>';
+}
+
+// ── SUB-PAGES ──
+function openSubPage(name){
+  const ids={companies:'sub-companies',startups:'sub-startups',ecosystem:'sub-ecosystem',investments:'sub-investments',datacentres:'sub-datacentres',nriforum:'sub-nriforum'};
+  const el=document.getElementById(ids[name]);
+  if(!el)return;
+  el.classList.add('open');
+  if(name==='companies')renderSubCompanies();
+  if(name==='startups')renderSubStartups();
+  if(name==='investments')renderSubInvestments();
+  if(name==='datacentres')renderSubDCs();
+  if(name==='nriforum')renderNRI();
+  if(name==='ecosystem')renderESDM();
+}
+
+function closeSubPage(id){document.getElementById(id)&&document.getElementById(id).classList.remove('open');}
+
+function renderSubPages(){
+  renderSubCompanies();renderSubStartups();renderSubInvestments();renderSubDCs();
+}
+
+function renderSubCompanies(){
+  const tbody=document.getElementById('sub-companies-tbody');
+  if(!tbody)return;
+  tbody.innerHTML=companies.length?companies.map(c=>`<tr><td>${c.name}</td><td><span class="tag tag-blue" style="font-size:10px">${c.sector}</span></td><td><span class="tag tag-${CLCOLOR[c.cluster]||'gray'}" style="font-size:10px">${CL[c.cluster]||c.cluster}</span></td><td>${stageTag(c.stage)}</td><td style="font-family:var(--mono);color:var(--green)">₹${c.invest}Cr</td><td style="font-family:var(--mono)">${c.jobs||0}</td><td style="color:var(--text3)">${c.contact||'–'}</td></tr>`).join(''):emptyRow(7,'No companies yet');
+}
+
+function renderSubStartups(){
+  const tbody=document.getElementById('sub-startups-tbody');
+  if(!tbody)return;
+  tbody.innerHTML=startups.length?startups.map(s=>`<tr><td>${s.name}</td><td><span class="tag tag-green" style="font-size:10px">${s.sector}</span></td><td><span class="tag tag-${CLCOLOR[s.cluster]||'gray'}" style="font-size:10px">${CL[s.cluster]||s.cluster}</span></td><td><span class="tag tag-blue" style="font-size:10px">${s.stage}</span></td><td>${s.founder||'–'}</td><td style="font-family:var(--mono);color:var(--green)">₹${s.funding||0}L</td><td style="font-size:12px;color:var(--text3)">${s.notes||'–'}</td></tr>`).join(''):emptyRow(7,'No startups yet');
+}
+
+function renderSubInvestments(){
+  const tbody=document.getElementById('investments-tbody');
+  if(!tbody)return;
+  const committed=companies.filter(c=>c.stage==='committed');
+  const jobs=committed.reduce((a,c)=>a+(+c.jobs||0),0);
+  const el=document.getElementById('invest-jobs');if(el)el.textContent=jobs;
+  tbody.innerHTML=committed.length?committed.map(c=>`<tr><td>${c.name}</td><td><span class="tag tag-${CLCOLOR[c.cluster]||'gray'}" style="font-size:10px">${CL[c.cluster]||c.cluster}</span></td><td>${c.sector}</td><td style="font-family:var(--mono);color:var(--green);font-size:15px">₹${c.invest}</td><td style="font-family:var(--mono)">${c.jobs||0}</td><td>${stageTag(c.stage)}</td></tr>`).join(''):emptyRow(6,'No committed investments yet');
+}
+
+function renderSubDCs(){
+  const el=document.getElementById('dc-cards');
+  const tot=document.getElementById('dc-total');
+  const op=document.getElementById('dc-op');
+  if(tot)tot.textContent=dcs.length;
+  if(op)op.textContent=dcs.filter(d=>d.status==='operational').length;
+  if(!el)return;
+  const dcSC={prospect:'gray',planning:'gold',construction:'orange',operational:'green'};
+  const dcSL={prospect:'Prospecting',planning:'Planning',construction:'Under Construction',operational:'Operational'};
+  el.innerHTML=dcs.length?dcs.map(d=>`<div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius2);padding:16px"><div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px"><div style="font-size:14px;font-weight:700">${d.name}</div><span class="tag tag-${dcSC[d.status]||'gray'}" style="font-size:10px">${dcSL[d.status]||d.status}</span></div><div style="font-size:11px;color:var(--text3);margin-bottom:10px">${CL[d.cluster]||d.cluster} · ${d.operator}</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:6px"><div style="background:var(--bg4);border-radius:6px;padding:6px 10px"><div style="font-size:9px;text-transform:uppercase;color:var(--text3)">Capacity</div><div style="font-size:14px;font-weight:700;font-family:var(--mono)">${d.mw}MW</div></div><div style="background:var(--bg4);border-radius:6px;padding:6px 10px"><div style="font-size:9px;text-transform:uppercase;color:var(--text3)">Invest</div><div style="font-size:14px;font-weight:700;font-family:var(--mono)">₹${d.invest}Cr</div></div></div></div>`).join(''):emptyRow(1,'No DCs yet');
+}
+
+function renderESDM(){
+  const tbody=document.getElementById('esdm-tbody');
+  if(!tbody)return;
+  tbody.innerHTML=esdm.length?esdm.map(e=>`<tr><td>${e.name}</td><td><span class="tag tag-${CLCOLOR[e.cluster]||'gray'}" style="font-size:10px">${CL[e.cluster]||e.cluster}</span></td><td>${e.type}</td><td style="font-family:var(--mono);color:var(--green)">₹${e.invest}Cr</td><td><span class="tag tag-blue" style="font-size:10px">${e.status}</span></td><td style="font-size:12px;color:var(--text3)">${e.notes||'–'}</td></tr>`).join(''):emptyRow(6,'No ESDM units yet — click + Add');
+}
+
+// ── MODALS & SAVES ──
+function openAddModal(){
+  const map={overview:openEventModal,clusters:()=>openCompanyModal(),clusterevents:openClusterEventAddModal,communications:openReminderModal,policy:openPolicyAppModal,nri:openNRIModal,bb:openCompanyModal};
+  (map[activeSection]||openTaskModal)();
+}
+function openModal(id){document.getElementById(id)&&document.getElementById(id).classList.add('open');}
+function closeModal(id){document.getElementById(id)&&document.getElementById(id).classList.remove('open');}
+function openTaskModal(cluster){if(cluster&&typeof cluster==='string'){const el=document.getElementById('t-cluster');if(el)el.value=cluster;}openModal('modal-task');}
+function openCompanyModal(){openModal('modal-company');}
+function openDCModal(){openModal('modal-dc');}
+function openReminderModal(){openModal('modal-reminder');}
+function openFollowupModal(){openModal('modal-followup');}
+function openNoteModal(){openModal('modal-note');}
+function openContactModal(){openModal('modal-contact');}
+function openPolicyAppModal(){openModal('modal-policy-app');}
+function openNRIModal(){openModal('modal-nri');}
+function openNRIEventModal(){openModal('modal-nri-event');}
+function openEventModal(){openModal('modal-event');}
+function openActivityModal(){openModal('modal-activity');}
+function openClusterEventAddModal(){openModal('modal-cluster-event');}
+function openStartupModal(){openModal('modal-startup');}
+function openESDMModal(){openModal('modal-esdm');}
+function openClusterMemberModal(cluster){const el=document.getElementById('cm-cluster');if(el)el.value=cluster;openModal('modal-cluster-member');}
+
+function saveTask(){
+  const t={id:Date.now(),title:v('t-title'),owner:v('t-owner'),cluster:v('t-cluster'),priority:v('t-priority'),status:v('t-status'),due:v('t-due'),notes:v('t-notes')};
+  if(!t.title)return alert('Task title required');
+  tasks.push(t);ss('tasks',tasks);closeModal('modal-task');clr(['t-title','t-owner','t-due','t-notes']);
+  renderClusterDetail(activeCluster,null);
+}
+
+function saveCompany(){
+  const c={id:Date.now(),name:v('co-name'),sector:v('co-sector'),cluster:v('co-cluster'),stage:v('co-stage'),invest:+v('co-invest')||0,jobs:+v('co-jobs')||0,contact:v('co-contact'),email:v('co-email'),notes:v('co-notes')};
+  if(!c.name)return alert('Company name required');
+  companies.push(c);ss('companies',companies);closeModal('modal-company');clr(['co-name','co-invest','co-jobs','co-contact','co-email','co-notes']);
+  renderSubPages();renderBBCompanies();renderClusterDetail(activeCluster,null);document.getElementById('ov-nri').textContent=nriMembers.length;
+}
+
+function saveStartup(){
+  const s={id:Date.now(),name:v('su-name'),sector:v('su-sector'),cluster:v('su-cluster'),stage:v('su-stage'),founder:v('su-founder'),funding:+v('su-funding')||0,notes:v('su-notes')};
+  if(!s.name)return alert('Name required');
+  startups.push(s);ss('startups',startups);closeModal('modal-startup');clr(['su-name','su-founder','su-funding','su-notes']);renderSubStartups();
+}
+
+function saveESDM(){
+  const e={id:Date.now(),name:v('es-name'),cluster:v('es-cluster'),type:v('es-type'),invest:+v('es-invest')||0,status:v('es-status'),notes:v('es-notes')};
+  if(!e.name)return alert('Name required');
+  esdm.push(e);ss('esdm',esdm);closeModal('modal-esdm');clr(['es-name','es-invest','es-notes']);renderESDM();
+}
+
+function saveDC(){
+  const d={id:Date.now(),name:v('dc-name'),operator:v('dc-operator'),cluster:v('dc-cluster'),status:v('dc-status'),mw:+v('dc-mw')||0,invest:+v('dc-invest')||0,land:+v('dc-land')||0,golive:v('dc-golive'),notes:v('dc-notes')};
+  if(!d.name)return alert('Name required');
+  dcs.push(d);ss('dcs',dcs);closeModal('modal-dc');clr(['dc-name','dc-operator','dc-mw','dc-invest','dc-land','dc-golive','dc-notes']);renderSubDCs();renderDCPanel(document.getElementById('cluster-detail-body'));
+}
+
+function saveReminder(){
+  const r={id:Date.now(),title:v('rem-title'),date:v('rem-date'),priority:v('rem-priority'),notes:v('rem-notes'),done:false};
+  if(!r.title)return alert('Title required');
+  reminders.push(r);ss('reminders',reminders);closeModal('modal-reminder');clr(['rem-title','rem-date','rem-notes']);renderReminders();
+}
+
+function saveFollowup(){
+  const f={id:Date.now(),name:v('fu-name'),company:v('fu-company'),topic:v('fu-topic'),channel:v('fu-channel'),date:v('fu-date'),status:v('fu-status')};
+  if(!f.name)return alert('Name required');
+  followups.push(f);ss('followups',followups);closeModal('modal-followup');clr(['fu-name','fu-company','fu-topic','fu-date']);renderFollowups();
+}
+
+function saveNote(){
+  const n={id:Date.now(),title:v('note-title'),cluster:v('note-cluster'),content:v('note-content'),date:new Date().toISOString()};
+  if(!n.title)return alert('Title required');
+  notes.push(n);ss('notes',notes);closeModal('modal-note');clr(['note-title','note-content']);renderNotes();
+}
+
+function saveContact(){
+  const c={id:Date.now(),name:v('ct-name'),org:v('ct-org'),role:v('ct-role'),type:v('ct-type'),phone:v('ct-phone'),email:v('ct-email'),cluster:v('ct-cluster')};
+  if(!c.name)return alert('Name required');
+  contacts.push(c);ss('contacts',contacts);closeModal('modal-contact');clr(['ct-name','ct-org','ct-role','ct-phone','ct-email']);renderContacts();
+}
+
+function savePolicyApp(){
+  const p={id:Date.now(),company:v('pa-company'),policy:v('pa-policy'),cat:v('pa-cat'),details:v('pa-details'),applied:v('pa-applied'),date:v('pa-date'),status:v('pa-status'),notes:v('pa-notes')};
+  if(!p.company)return alert('Company required');
+  policyApps.push(p);ss('policyapps',policyApps);closeModal('modal-policy-app');clr(['pa-company','pa-details','pa-date','pa-notes']);renderPolicyApps('all');
+}
+
+function saveNRI(){
+  const m={id:Date.now(),name:v('nri-name'),country:v('nri-country'),org:v('nri-org'),interest:v('nri-interest'),commit:+v('nri-commit')||0,cluster:v('nri-cluster')};
+  if(!m.name)return alert('Name required');
+  nriMembers.push(m);ss('nri',nriMembers);closeModal('modal-nri');clr(['nri-name','nri-country','nri-org','nri-commit']);renderNRI();
+}
+
+function saveNRIEvent(){
+  const e={id:Date.now(),name:v('nev-name'),date:v('nev-date'),location:v('nev-location'),attendees:+v('nev-attendees')||0,notes:v('nev-notes')};
+  if(!e.name)return alert('Name required');
+  nriEvents.push(e);ss('nrievents',nriEvents);closeModal('modal-nri-event');clr(['nev-name','nev-date','nev-location','nev-attendees','nev-notes']);renderNRI();
+}
+
+function saveEvent(){
+  const e={id:Date.now(),name:v('ev-name'),type:v('ev-type'),date:v('ev-date'),cluster:v('ev-cluster'),notes:v('ev-notes')};
+  if(!e.name)return alert('Name required');
+  events.push(e);ss('events',events);closeModal('modal-event');clr(['ev-name','ev-date','ev-notes']);renderOvEvents();renderCalendar('ov-cal-labels','ov-cal-body');renderCalendar('comm-cal-labels','comm-cal-body');
+}
+
+function saveActivity(){
+  const a={id:Date.now(),title:v('act-title'),type:v('act-type'),cluster:v('act-cluster'),desc:v('act-desc'),date:new Date().toISOString()};
+  if(!a.title)return alert('Title required');
+  activities.push(a);ss('activities',activities);closeModal('modal-activity');clr(['act-title','act-desc']);renderOvTimeline();
+}
+
+function saveClusterEvent(){
+  const e={id:Date.now(),name:v('ce-name'),cluster:v('ce-cluster'),date:v('ce-date'),venue:v('ce-venue'),desc:v('ce-desc')};
+  if(!e.name)return alert('Event name required');
+  clusterEvents.push(e);ss('clusterevents',clusterEvents);closeModal('modal-cluster-event');clr(['ce-name','ce-date','ce-venue','ce-desc']);renderClusterEvents();
+}
+
+function saveClusterMember(){
+  const m={id:Date.now(),name:v('cm-name'),role:v('cm-role'),email:v('cm-email'),cluster:v('cm-cluster')};
+  if(!m.name)return alert('Name required');
+  clusterMembers.push(m);ss('clustermembers',clusterMembers);closeModal('modal-cluster-member');clr(['cm-name','cm-role','cm-email']);renderClusterDetail(activeCluster,null);
+}
+
+// ── HELPERS ──
+function v(id){const el=document.getElementById(id);return el?el.value.trim():''}
+function clr(ids){ids.forEach(id=>{const el=document.getElementById(id);if(el)el.value=''})}
+function cap(s){return s?s[0].toUpperCase()+s.slice(1):''}
+function initials(name){return(name||'').split(' ').slice(0,2).map(w=>w[0]||'').join('').toUpperCase()}
+function fmtDate(d){if(!d)return'';try{return new Date(d).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'})}catch{return d}}
+function monthAbbr(d){if(!d)return'';try{return new Date(d).toLocaleDateString('en-IN',{month:'short'})}catch{return''}}
+function dayNum(d){if(!d)return'';try{return new Date(d).getDate()}catch{return''}}
+function daysFrom(n){const d=new Date();d.setDate(d.getDate()+n);return d.toISOString().split('T')[0]}
+function emptyRow(cols,msg){return`<tr><td colspan="${cols}" style="text-align:center;color:var(--text3);padding:24px;font-size:12px">${msg}</td></tr>`}
+function statusTag(s){const m={todo:['gray','To Do'],inprogress:['blue','In Progress'],done:['green','Done']};const[c,l]=m[s]||['gray',s];return`<span class="tag tag-${c}" style="font-size:10px">${l}</span>`}
+function stageTag(s){const m={prospect:['gray','Prospect'],engaged:['gold','Engaged'],committed:['green','Committed']};const[c,l]=m[s]||['gray',s];return`<span class="tag tag-${c}" style="font-size:10px">${l}</span>`}
+</script>
+</body>
+</html>
