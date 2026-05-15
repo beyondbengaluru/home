@@ -1486,7 +1486,7 @@ function saveESDM(){
 function saveDC(){
   const d={id:Date.now(),name:v('dc-name'),operator:v('dc-operator'),cluster:v('dc-cluster'),status:v('dc-status'),mw:+v('dc-mw')||0,invest:+v('dc-invest')||0,land:+v('dc-land')||0,golive:v('dc-golive'),notes:v('dc-notes')};
   if(!d.name)return alert('Name required');
-  dcs.push(d);ss('dcs',dcs);closeModal('modal-dc');clr(['dc-name','dc-operator','dc-mw','dc-invest','dc-land','dc-golive','dc-notes']);renderSubDCs();renderDCPanel(document.getElementById('cluster-detail-body'));
+  dcs.push(d);ss('dcs',dcs);closeModal('modal-dc');clr(['dc-name','dc-operator','dc-mw','dc-invest','dc-land','dc-golive','dc-notes']);renderSubDCs();renderDCPanel(ument.getElementById('cluster-detail-body'));
 }
 
 function saveReminder(){
@@ -1613,15 +1613,16 @@ async function loadTasks() {
     tasks = data;
 }
 
-document.addEventListener('DOMContentLoaded', async ()=>{
+document.addEventListener('DOMContentLoaded', async () => {
     seed();
 
+    // Initial load of data
     await loadCompanies();
     await loadTasks();
 
     setupNav();
     renderOverview();
-    renderClusterDetail('all',document.querySelector('[data-cluster="all"]'));
+    renderClusterDetail('all', document.querySelector('[data-cluster="all"]'));
     renderClusterEvents();
     renderNRI();
     renderPolicyApps('all');
@@ -1630,6 +1631,44 @@ document.addEventListener('DOMContentLoaded', async ()=>{
     renderNotes();
     renderContacts();
     renderSubPages();
+
+    // ── LIVE TRACKER UPDATES VIA SUPABASE REALTIME ──
+    
+    // Listen for live updates on the Companies table
+    supabaseClient
+        .channel('schema-db-changes-companies')
+        .on(
+            'postgres_changes',
+            { event: '*', schema: 'public', table: 'companies' },
+            async (payload) => {
+                console.log('Live Company Change Detected:', payload);
+                await loadCompanies(); // Re-fetch updated data
+                // Re-render components relying on company data
+                renderBBCompanies();
+                renderSubCompanies();
+                renderSubInvestments();
+                if (activeSection === 'clusters') {
+                    renderClusterDetail(activeCluster, document.querySelector(`#cluster-tabs [data-cluster="${activeCluster}"]`));
+                }
+            }
+        )
+        .subscribe();
+
+    // Listen for live updates on the Tasks table
+    supabaseClient
+        .channel('schema-db-changes-tasks')
+        .on(
+            'postgres_changes',
+            { event: '*', schema: 'public', table: 'tasks' },
+            async (payload) => {
+                console.log('Live Task Change Detected:', payload);
+                await loadTasks(); // Re-fetch updated data
+                if (activeSection === 'clusters') {
+                    renderClusterDetail(activeCluster, document.querySelector(`#cluster-tabs [data-cluster="${activeCluster}"]`));
+                }
+            }
+        )
+        .subscribe();
 });
 </script>
 </body>
