@@ -1611,6 +1611,11 @@ async function loadTasks() {
     }
 
     tasks = data;
+    
+    // FIX: Force visual refresh of the task components on the UI
+    if (typeof renderOverview === 'function' && activeSection === 'overview') {
+        renderOverview();
+    }
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -1643,6 +1648,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             async (payload) => {
                 console.log('Live Company Change Detected:', payload);
                 await loadCompanies(); // Re-fetch updated data
+                
                 // Re-render components relying on company data
                 renderBBCompanies();
                 renderSubCompanies();
@@ -1663,7 +1669,11 @@ document.addEventListener('DOMContentLoaded', async () => {
             async (payload) => {
                 console.log('Live Task Change Detected:', payload);
                 await loadTasks(); // Re-fetch updated data
-                if (activeSection === 'clusters') {
+                
+                // Instantly update UI based on active panel viewpoint
+                if (activeSection === 'overview') {
+                    renderOverview();
+                } else if (activeSection === 'clusters') {
                     renderClusterDetail(activeCluster, document.querySelector(`#cluster-tabs [data-cluster="${activeCluster}"]`));
                 }
             }
@@ -1672,4 +1682,3 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 </script>
 </body>
-</html>
