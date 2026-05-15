@@ -1439,33 +1439,41 @@ async function saveTask() {
     closeModal("modal-task");
     if(activeSection === 'clusters') renderClusterDetail(activeCluster, document.querySelector(`#cluster-tabs [data-cluster="${activeCluster}"]`));
 }
-
 async function saveCompany() {
+    const investmentInput = document.getElementById("co-invest").value.trim();
+    const jobsInput = document.getElementById("co-jobs").value.trim();
+
+    // Build payload ensuring clean numeric types for PostgreSQL validation
     const company = {
-        name: document.getElementById("co-name").value,
+        name: document.getElementById("co-name").value.trim() || "Unnamed Company",
         sector: document.getElementById("co-sector").value,
         cluster: document.getElementById("co-cluster").value,
         stage: document.getElementById("co-stage").value,
-        investment: document.getElementById("co-invest").value,
-        jobs: document.getElementById("co-jobs").value,
-        contact: document.getElementById("co-contact").value,
-        email: document.getElementById("co-email").value,
-        notes: document.getElementById("co-notes").value
+        investment: investmentInput ? parseFloat(investmentInput) : 0, // Primary DB Column
+        invest: investmentInput ? parseFloat(investmentInput) : 0,     // UI structural fallback
+        jobs: jobsInput ? parseInt(jobsInput, 10) : 0,
+        contact: document.getElementById("co-contact").value.trim() || null,
+        email: document.getElementById("co-email").value.trim() || null,
+        notes: document.getElementById("co-notes").value.trim() || null
     };
 
     const { error } = await supabaseClient
         .from("companies")
         .insert([company]);
 
-    if(error){
-        console.log(error);
-        alert("Error saving company");
+    if (error) {
+        console.error("Detailed Insertion Error:", error);
+        // Appends the real database error message to your pop-up window
+        alert("Error saving company: " + error.message);
         return;
     }
 
     await loadCompanies();
     closeModal("modal-company");
-    if(activeSection === 'clusters') renderClusterDetail(activeCluster, document.querySelector(`#cluster-tabs [data-cluster="${activeCluster}"]`));
+    
+    if (activeSection === 'clusters') {
+        renderClusterDetail(activeCluster, document.querySelector(`#cluster-tabs [data-cluster="${activeCluster}"]`));
+    }
 }
 
 window.saveTask = saveTask;
