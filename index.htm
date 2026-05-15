@@ -34,6 +34,7 @@
   --transition: 0.18s ease;
 }
 
+
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 
 body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;display:flex;font-size:14px;line-height:1.6}
@@ -266,7 +267,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
   <div class="nav-item active" data-section="overview"><span class="nav-icon">⬡</span> BB Overview</div>
 
   <div class="nav-section-label">Operations</div>
-  <div class="nav-item" data-section="clusters"><span class="nav-icon">◎</span> Clusters</div>
+  <div class="nav-item" data-section="clusters"><span class="nav-icon">◎</span> Cluster Wise</div>
   <div class="nav-item" data-section="clusterevents"><span class="nav-icon">◉</span> Cluster Events</div>
 
   <div class="nav-section-label">Engagement</div>
@@ -756,7 +757,17 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
   </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+
 <script>
+const SUPABASE_URL = "https://yourproject.supabase.co";
+const SUPABASE_KEY = "your-anon-key";
+
+const supabaseClient = supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
+
 // ── DATA STORE ──
 const CL = {bangalore:'Bangalore',mysuru:'Mysuru',mangaluru:'Mangaluru',hdb:'Hubli-Dharwad-Belagavi',kalaburagi:'Kalaburagi',tumakuru:'Tumakuru',shivamogga:'Shivamogga',all:'All Clusters'};
 const CLUSTER_KEYS = ['bangalore','mysuru','mangaluru','hdb','kalaburagi','tumakuru','shivamogga'];
@@ -765,13 +776,22 @@ const CLCOLOR = {bangalore:'blue',mysuru:'purple',mangaluru:'teal',hdb:'gold',ka
 function ls(k){return JSON.parse(localStorage.getItem('bb2_'+k)||'[]')}
 function ss(k,v){localStorage.setItem('bb2_'+k,JSON.stringify(v))}
 
-let tasks=ls('tasks'), companies=ls('companies'), activities=ls('activities');
-let reminders=ls('reminders'), followups=ls('followups'), notes=ls('notes');
-let contacts=ls('contacts'), policyApps=ls('policyapps'), nriMembers=ls('nri');
-let nriEvents=ls('nrievents'), events=ls('events'), dcs=ls('dcs');
-let startups=ls('startups'), esdm=ls('esdm'), clusterEvents=ls('clusterevents');
-let clusterMembers=ls('clustermembers');
-// per-cluster-event sub items stored per event id
+let tasks = [];
+let companies = [];
+let activities = [];
+let reminders = [];
+let followups = [];
+let notes = [];
+let contacts = [];
+let policyApps = [];
+let nriMembers = [];
+let nriEvents = [];
+let events = [];
+let dcs = [];
+let startups = [];
+let esdm = [];
+let clusterEvents = [];
+let clusterMembers = [];
 let ceItems=JSON.parse(localStorage.getItem('bb2_ceitems')||'{}');
 
 let activeSection='overview';
@@ -852,23 +872,6 @@ function seed(){
   }
 }
 
-// ── INIT ──
-document.addEventListener('DOMContentLoaded',()=>{
-  seed();
-  setupNav();
-  renderOverview();
-  renderClusterDetail('all',document.querySelector('[data-cluster="all"]'));
-  renderClusterEvents();
-  renderNRI();
-  renderBBCompanies();
-  renderPolicyApps('all');
-  renderReminders();
-  renderFollowups();
-  renderNotes();
-  renderContacts();
-  renderSubPages();
-});
-
 function setupNav(){
   document.querySelectorAll('.nav-item').forEach(el=>{
     el.addEventListener('click',()=>switchSection(el.dataset.section));
@@ -885,9 +888,13 @@ function switchSection(name){
   const titles={overview:'BB Overview',clusters:'Cluster Wise',clusterevents:'Cluster Events',communications:'Communications',policy:'Policy Tracker',nri:'NRI Forums',bb:'Beyond Bengaluru'};
   document.getElementById('topbar-title').textContent=titles[name]||name;
   document.getElementById('topbar-cluster-wrap').style.display=name==='clusters'?'block':'none';
+  if(name==='clusters') renderClusterDetail(activeCluster, document.querySelector(`#cluster-tabs [data-cluster="${activeCluster}"]`));
 }
 
-function switchCluster(val){activeCluster=val;}
+function switchCluster(val){
+  activeCluster=val;
+  renderClusterDetail(val, document.querySelector(`#cluster-tabs [data-cluster="${val}"]`));
+}
 
 // ── OVERVIEW ──
 function renderOverview(){
@@ -899,6 +906,7 @@ function renderOverview(){
 
 function renderOvEvents(){
   const el=document.getElementById('ov-events-list');
+  if(!el) return;
   const sorted=[...events].sort((a,b)=>a.date>b.date?1:-1);
   el.innerHTML=sorted.length?sorted.map(e=>`
     <div style="padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px">
@@ -916,6 +924,7 @@ function renderOvEvents(){
 
 function renderOvTimeline(){
   const el=document.getElementById('ov-timeline');
+  if(!el) return;
   const show=[...activities].reverse().slice(0,5);
   el.innerHTML=show.length?show.map((a,i)=>`
     <div class="timeline-item ${i===0?'active-t':'done'}">
@@ -954,6 +963,7 @@ function renderClusterDetail(cluster,tabEl){
   activeCluster=cluster;
   if(tabEl){document.querySelectorAll('#cluster-tabs .tab').forEach(t=>t.classList.remove('active'));tabEl.classList.add('active');}
   const body=document.getElementById('cluster-detail-body');
+  if(!body) return;
   if(cluster==='datacentres'){
     renderDCPanel(body);return;
   }
@@ -984,7 +994,7 @@ function renderClusterDetail(cluster,tabEl){
         <div class="panel-header"><div class="panel-title">⬢ Companies (${filtCo.length})</div></div>
         <div style="overflow-x:auto">
           <table class="data-table"><thead><tr><th>Company</th><th>Sector</th><th>Stage</th><th>Investment</th><th>Priority</th><th>Date</th><th>Notes</th></tr></thead>
-          <tbody>${filtCo.length?filtCo.map(c=>`<tr><td>${c.name}</td><td><span class="tag tag-blue" style="font-size:10px">${c.sector}</span></td><td>${stageTag(c.stage)}</td><td style="font-family:var(--mono);color:var(--green)">₹${c.invest}Cr</td><td>–</td><td>–</td><td style="font-size:12px;color:var(--text3);max-width:180px;white-space:normal">${c.notes||'–'}</td></tr>`).join(''):emptyRow(7,'No companies yet')}</tbody>
+          <tbody>${filtCo.length?filtCo.map(c=>`<tr><td>${c.name}</td><td><span class="tag tag-blue" style="font-size:10px">${c.sector}</span></td><td>${stageTag(c.stage)}</td><td style="font-family:var(--mono);color:var(--green)">₹${c.invest || c.investment || 0}Cr</td><td>–</td><td>–</td><td style="font-size:12px;color:var(--text3);max-width:180px;white-space:normal">${c.notes||'–'}</td></tr>`).join(''):emptyRow(7,'No companies yet')}</tbody>
           </table>
         </div>
       </div>
@@ -993,7 +1003,7 @@ function renderClusterDetail(cluster,tabEl){
           <div class="panel-header"><div class="panel-title">✓ Tasks (${filtTasks.length})</div></div>
           <div style="overflow-x:auto">
             <table class="data-table"><thead><tr><th>Task</th><th>Owner</th><th>Priority</th><th>Due</th><th>Status</th><th>Notes</th></tr></thead>
-            <tbody>${filtTasks.length?filtTasks.map(t=>`<tr><td>${t.title}</td><td><span class="tag tag-gray" style="font-size:10px">${t.owner}</span></td><td><span class="p-dot p-${t.priority}"></span>${cap(t.priority)}</td><td style="font-family:var(--mono);font-size:11px">${t.due||'–'}</td><td>${statusTag(t.status)}</td><td style="font-size:12px;color:var(--text3)">${t.notes||'–'}</td></tr>`).join(''):emptyRow(6,'No tasks yet')}</tbody>
+            <tbody>${filtTasks.length?filtTasks.map(t=>`<tr><td>${t.title}</td><td><span class="tag tag-gray" style="font-size:10px">${t.owner}</span></td><td><span class="p-dot p-${t.priority}"></span>${cap(t.priority)}</td><td style="font-family:var(--mono);font-size:11px">${t.due_date||'–'}</td><td>${statusTag(t.status)}</td><td style="font-size:12px;color:var(--text3)">${t.notes||'–'}</td></tr>`).join(''):emptyRow(6,'No tasks yet')}</tbody>
           </table></div>
         </div>
         <div class="panel">
@@ -1035,6 +1045,7 @@ function renderDCPanel(body){
 // ── CLUSTER EVENTS ──
 function renderClusterEvents(){
   const el=document.getElementById('cluster-events-list');
+  if(!el) return;
   el.innerHTML=clusterEvents.map(ev=>{
     const items=ceItems[ev.id]||{agenda:[],speakers:[],tasks:[]};
     const collapsed=localStorage.getItem('ce_collapsed_'+ev.id)==='true';
@@ -1146,6 +1157,7 @@ function saveCEItem(){
 // ── POLICY ──
 function renderPolicyApps(cat){
   const tbody=document.getElementById('policy-tbody');
+  if(!tbody) return;
   const list=cat==='all'?policyApps:policyApps.filter(p=>p.cat===cat);
   const appliedColors={yes:'green',no:'gray',pending:'gold'};
   const statusColors={'In Review':'gold','Approved':'green','Rejected':'red','Disbursed':'teal','Not Started':'gray'};
@@ -1186,7 +1198,9 @@ function renderNRI(){
     </div>`).join('') : '<div class="empty-state"><div class="empty-icon">◈</div><div class="empty-text">No members yet</div></div>';
   if(el)el.innerHTML=html;
   if(sub)sub.innerHTML=html;
-  document.getElementById('ov-nri').textContent=nriMembers.length;
+  
+  const ovNriEl = document.getElementById('ov-nri');
+  if(ovNriEl) ovNriEl.textContent=nriMembers.length;
 
   const evEl=document.getElementById('nri-events-list');
   if(evEl)evEl.innerHTML=nriEvents.length?nriEvents.map(e=>`
@@ -1200,13 +1214,14 @@ function renderNRI(){
 // ── BB COMPANIES ──
 function renderBBCompanies(filter=''){
   const tbody=document.getElementById('bb-companies-tbody');
+  if(!tbody) return;
   const list=filter?companies.filter(c=>c.name.toLowerCase().includes(filter)):companies;
   tbody.innerHTML=list.length?list.map(c=>`<tr>
     <td>${c.name}</td>
     <td><span class="tag tag-blue" style="font-size:10px">${c.sector}</span></td>
     <td><span class="tag tag-${CLCOLOR[c.cluster]||'gray'}" style="font-size:10px">${CL[c.cluster]||c.cluster}</span></td>
     <td>${stageTag(c.stage)}</td>
-    <td style="font-family:var(--mono);color:var(--green)">₹${c.invest}</td>
+    <td style="font-family:var(--mono);color:var(--green)">₹${c.invest || c.investment || 0}</td>
     <td style="font-family:var(--mono)">${c.jobs||0}</td>
     <td style="font-size:12px;color:var(--text2)">${c.contact||'–'}</td>
     <td style="font-size:12px;color:var(--text3);max-width:200px;white-space:normal">${c.notes||'–'}</td>
@@ -1307,8 +1322,20 @@ function renderSubPages(){
 function renderSubCompanies(){
   const tbody=document.getElementById('sub-companies-tbody');
   if(!tbody)return;
-  tbody.innerHTML=companies.length?companies.map(c=>`<tr><td>${c.name}</td><td><span class="tag tag-blue" style="font-size:10px">${c.sector}</span></td><td><span class="tag tag-${CLCOLOR[c.cluster]||'gray'}" style="font-size:10px">${CL[c.cluster]||c.cluster}</span></td><td>${stageTag(c.stage)}</td><td style="font-family:var(--mono);color:var(--green)">₹${c.invest}Cr</td><td style="font-family:var(--mono)">${c.jobs||0}</td><td style="color:var(--text3)">${c.contact||'–'}</td></tr>`).join(''):emptyRow(7,'No companies yet');
+  tbody.innerHTML=companies.length?companies.map(c=>`<tr><td>${c.name}</td><td><span class="tag tag-blue" style="font-size:10px">${c.sector}</span></td><td><span class="tag tag-${CLCOLOR[c.cluster]||'gray'}" style="font-size:10px">${CL[c.cluster]||c.cluster}</span></td><td>${stageTag(c.stage)}</td><td style="font-family:var(--mono);color:var(--green)">₹${c.invest || c.investment || 0}Cr</td><td style="font-family:var(--mono)">${c.jobs||0}</td><td style="color:var(--text3)">${c.contact||'–'}</td></tr>`).join(''):emptyRow(7,'No companies yet');
 }
+
+// Global scope initialization for view details hooks
+window.openSubPage = openSubPage;
+window.switchCluster = switchCluster;
+window.toggleReminder = toggleReminder;
+window.deleteReminder = deleteReminder;
+window.switchCommTab = switchCommTab;
+window.filterContacts = filterContacts;
+window.filterPolicy = filterPolicy;
+window.toggleCECard = toggleCECard;
+window.showCETab = showCETab;
+window.openCEItemModal = openCEItemModal;
 
 function renderSubStartups(){
   const tbody=document.getElementById('sub-startups-tbody');
@@ -1322,7 +1349,7 @@ function renderSubInvestments(){
   const committed=companies.filter(c=>c.stage==='committed');
   const jobs=committed.reduce((a,c)=>a+(+c.jobs||0),0);
   const el=document.getElementById('invest-jobs');if(el)el.textContent=jobs;
-  tbody.innerHTML=committed.length?committed.map(c=>`<tr><td>${c.name}</td><td><span class="tag tag-${CLCOLOR[c.cluster]||'gray'}" style="font-size:10px">${CL[c.cluster]||c.cluster}</span></td><td>${c.sector}</td><td style="font-family:var(--mono);color:var(--green);font-size:15px">₹${c.invest}</td><td style="font-family:var(--mono)">${c.jobs||0}</td><td>${stageTag(c.stage)}</td></tr>`).join(''):emptyRow(6,'No committed investments yet');
+  tbody.innerHTML=committed.length?committed.map(c=>`<tr><td>${c.name}</td><td><span class="tag tag-${CLCOLOR[c.cluster]||'gray'}" style="font-size:10px">${CL[c.cluster]||c.cluster}</span></td><td>${c.sector}</td><td style="font-family:var(--mono);color:var(--green);font-size:15px">₹${c.invest || c.investment || 0}</td><td style="font-family:var(--mono)">${c.jobs||0}</td><td>${stageTag(c.stage)}</td></tr>`).join(''):emptyRow(6,'No committed investments yet');
 }
 
 function renderSubDCs(){
@@ -1367,19 +1394,82 @@ function openStartupModal(){openModal('modal-startup');}
 function openESDMModal(){openModal('modal-esdm');}
 function openClusterMemberModal(cluster){const el=document.getElementById('cm-cluster');if(el)el.value=cluster;openModal('modal-cluster-member');}
 
-function saveTask(){
-  const t={id:Date.now(),title:v('t-title'),owner:v('t-owner'),cluster:v('t-cluster'),priority:v('t-priority'),status:v('t-status'),due:v('t-due'),notes:v('t-notes')};
-  if(!t.title)return alert('Task title required');
-  tasks.push(t);ss('tasks',tasks);closeModal('modal-task');clr(['t-title','t-owner','t-due','t-notes']);
-  renderClusterDetail(activeCluster,null);
+window.openAddModal = openAddModal;
+window.closeModal = closeModal;
+window.openEventModal = openEventModal;
+window.openClusterEventAddModal = openClusterEventAddModal;
+window.openReminderModal = openReminderModal;
+window.openPolicyAppModal = openPolicyAppModal;
+window.openNRIModal = openNRIModal;
+window.openCompanyModal = openCompanyModal;
+window.openFollowupModal = openFollowupModal;
+window.openNoteModal = openNoteModal;
+window.openContactModal = openContactModal;
+window.openClusterMemberModal = openClusterMemberModal;
+window.openTaskModal = openTaskModal;
+window.openNRIEventModal = openNRIEventModal;
+window.openActivityModal = openActivityModal;
+window.openDCModal = openDCModal;
+window.openStartupModal = openStartupModal;
+window.openESDMModal = openESDMModal;
+window.closeSubPage = closeSubPage;
+
+async function saveTask() {
+    const task = {
+        title: document.getElementById("t-title").value,
+        owner: document.getElementById("t-owner").value,
+        cluster: document.getElementById("t-cluster").value,
+        priority: document.getElementById("t-priority").value,
+        due_date: document.getElementById("t-due").value,
+        status: document.getElementById("t-status").value,
+        notes: document.getElementById("t-notes").value
+    };
+
+    const { error } = await supabaseClient
+        .from("tasks")
+        .insert([task]);
+
+    if(error){
+        console.log(error);
+        alert("Error saving task");
+        return;
+    }
+
+    await loadTasks();
+    closeModal("modal-task");
+    if(activeSection === 'clusters') renderClusterDetail(activeCluster, document.querySelector(`#cluster-tabs [data-cluster="${activeCluster}"]`));
 }
 
-function saveCompany(){
-  const c={id:Date.now(),name:v('co-name'),sector:v('co-sector'),cluster:v('co-cluster'),stage:v('co-stage'),invest:+v('co-invest')||0,jobs:+v('co-jobs')||0,contact:v('co-contact'),email:v('co-email'),notes:v('co-notes')};
-  if(!c.name)return alert('Company name required');
-  companies.push(c);ss('companies',companies);closeModal('modal-company');clr(['co-name','co-invest','co-jobs','co-contact','co-email','co-notes']);
-  renderSubPages();renderBBCompanies();renderClusterDetail(activeCluster,null);document.getElementById('ov-nri').textContent=nriMembers.length;
+async function saveCompany() {
+    const company = {
+        name: document.getElementById("co-name").value,
+        sector: document.getElementById("co-sector").value,
+        cluster: document.getElementById("co-cluster").value,
+        stage: document.getElementById("co-stage").value,
+        investment: document.getElementById("co-invest").value,
+        jobs: document.getElementById("co-jobs").value,
+        contact: document.getElementById("co-contact").value,
+        email: document.getElementById("co-email").value,
+        notes: document.getElementById("co-notes").value
+    };
+
+    const { error } = await supabaseClient
+        .from("companies")
+        .insert([company]);
+
+    if(error){
+        console.log(error);
+        alert("Error saving company");
+        return;
+    }
+
+    await loadCompanies();
+    closeModal("modal-company");
+    if(activeSection === 'clusters') renderClusterDetail(activeCluster, document.querySelector(`#cluster-tabs [data-cluster="${activeCluster}"]`));
 }
+
+window.saveTask = saveTask;
+window.saveCompany = saveCompany;
 
 function saveStartup(){
   const s={id:Date.now(),name:v('su-name'),sector:v('su-sector'),cluster:v('su-cluster'),stage:v('su-stage'),founder:v('su-founder'),funding:+v('su-funding')||0,notes:v('su-notes')};
@@ -1465,6 +1555,22 @@ function saveClusterMember(){
   clusterMembers.push(m);ss('clustermembers',clusterMembers);closeModal('modal-cluster-member');clr(['cm-name','cm-role','cm-email']);renderClusterDetail(activeCluster,null);
 }
 
+window.saveStartup = saveStartup;
+window.saveESDM = saveESDM;
+window.saveDC = saveDC;
+window.saveReminder = saveReminder;
+window.saveFollowup = saveFollowup;
+window.saveNote = saveNote;
+window.saveContact = saveContact;
+window.savePolicyApp = savePolicyApp;
+window.saveNRI = saveNRI;
+window.saveNRIEvent = saveNRIEvent;
+window.saveEvent = saveEvent;
+window.saveActivity = saveActivity;
+window.saveClusterEvent = saveClusterEvent;
+window.saveClusterMember = saveClusterMember;
+window.saveCEItem = saveCEItem;
+
 // ── HELPERS ──
 function v(id){const el=document.getElementById(id);return el?el.value.trim():''}
 function clr(ids){ids.forEach(id=>{const el=document.getElementById(id);if(el)el.value=''})}
@@ -1477,6 +1583,54 @@ function daysFrom(n){const d=new Date();d.setDate(d.getDate()+n);return d.toISOS
 function emptyRow(cols,msg){return`<tr><td colspan="${cols}" style="text-align:center;color:var(--text3);padding:24px;font-size:12px">${msg}</td></tr>`}
 function statusTag(s){const m={todo:['gray','To Do'],inprogress:['blue','In Progress'],done:['green','Done']};const[c,l]=m[s]||['gray',s];return`<span class="tag tag-${c}" style="font-size:10px">${l}</span>`}
 function stageTag(s){const m={prospect:['gray','Prospect'],engaged:['gold','Engaged'],committed:['green','Committed']};const[c,l]=m[s]||['gray',s];return`<span class="tag tag-${c}" style="font-size:10px">${l}</span>`}
+
+async function loadCompanies() {
+    const { data, error } = await supabaseClient
+        .from("companies")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+    if(error){
+        console.log(error);
+        return;
+    }
+
+    companies = data;
+    renderBBCompanies();
+}
+
+async function loadTasks() {
+    const { data, error } = await supabaseClient
+        .from("tasks")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+    if(error){
+        console.log(error);
+        return;
+    }
+
+    tasks = data;
+}
+
+document.addEventListener('DOMContentLoaded', async ()=>{
+    seed();
+
+    await loadCompanies();
+    await loadTasks();
+
+    setupNav();
+    renderOverview();
+    renderClusterDetail('all',document.querySelector('[data-cluster="all"]'));
+    renderClusterEvents();
+    renderNRI();
+    renderPolicyApps('all');
+    renderReminders();
+    renderFollowups();
+    renderNotes();
+    renderContacts();
+    renderSubPages();
+});
 </script>
 </body>
 </html>
