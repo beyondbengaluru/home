@@ -982,7 +982,7 @@ async function doLogin(){
   const errEl=document.getElementById('login-error');
   if(!email||!pass){errEl.style.display='block';errEl.textContent='Please enter email and password';return;}
   btn.textContent='Signing in…';btn.disabled=true;errEl.style.display='none';
-  const {data,error}=await sb.auth.signInWithPassword({email,password:fail});
+  const {data,error}=await sb.auth.signInWithPassword({email,password:pass});
   btn.textContent='Sign In';btn.disabled=false;
   if(error){errEl.style.display='block';errEl.textContent=error.message;return;}
   await initApp(data.user);
